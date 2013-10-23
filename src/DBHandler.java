@@ -1,5 +1,6 @@
 import java.io.PrintWriter;
 import java.io.StringWriter;
+
 import org.lightcouch.CouchDbClient;
 import org.lightcouch.DocumentConflictException;
 import org.lightcouch.NoDocumentException;
@@ -13,7 +14,7 @@ public class DBHandler {
 	private Gson gson;
 
 	public DBHandler() {
-		dbClient = new CouchDbClient("proj1", true, "http", "localhost", 5984,
+		dbClient = new CouchDbClient("proj2", true, "http", "localhost", 5984,
 				null, null);
 		gson = new Gson();
 	}
@@ -124,7 +125,7 @@ public class DBHandler {
 		return dbClient.contains(email);
 	}
 
-	public void updateObject(UserData userObject) {
+	public void updateUser(UserData userObject) {
 		Gson gson = new Gson();
 		String jsonString = gson.toJson(userObject);
 		JsonObject jsonobj = dbClient.getGson().fromJson(jsonString,
@@ -136,8 +137,38 @@ public class DBHandler {
 		dbClient.shutdown();
 	}
 	
+	//--------GROUPS--------------------------------------------
+	public void addNewGroup(Group group){
+		gson = new Gson();
+		String jsonString = gson.toJson(group);
+		JsonObject jsonobj = dbClient.getGson().fromJson(jsonString,
+				JsonObject.class);
+		dbClient.save(jsonobj);		
+	}
+	
+	public Group getGroup(String group_id) {
+		Group group = dbClient.find(Group.class, group_id);
+		return group;
+	}
+	
+	//TO-DO: CHECK FOR CONCURRENCY
+	public void updateGroup(Group group) {
+		Gson gson = new Gson();
+		String jsonString = gson.toJson(group);
+		JsonObject jsonobj = dbClient.getGson().fromJson(jsonString,
+				JsonObject.class);
+		dbClient.update(jsonobj);
+	}
+	
 	public static void main(String [] args){
-		
+		String [] users = {"cesar","chalo","saman"};
+		String [] messages = {"hi","how are you?"};
+		Group group = new Group("Halo u", "chalo", users, messages);
+		DBHandler dbhandler = new DBHandler();
+		dbhandler.addNewGroup(group);
+		group = dbhandler.getGroup("uni");
+		group.owner = "God";
+		dbhandler.updateGroup(group);
 	}
 
 }
