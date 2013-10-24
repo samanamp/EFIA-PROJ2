@@ -1,5 +1,10 @@
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 import org.lightcouch.CouchDbClient;
 import org.lightcouch.DocumentConflictException;
@@ -161,14 +166,18 @@ public class DBHandler {
 	}
 	
 	public static void main(String [] args){
-		String [] users = {"cesar","chalo","saman"};
-		String [] messages = {"hi","how are you?"};
-		Group group = new Group("Halo u", "chalo", users, messages);
+		ArrayList <String> users = new ArrayList();
+		users.add("saman");
+		users.add("chalo");
+		users.add("checharo");
+		ArrayList <String> messages = new ArrayList();
+		messages.add("Hola");
+		messages.add("como estas");
+		Group group = new Group("Samax", "chalo", users, messages);
 		DBHandler dbhandler = new DBHandler();
 		dbhandler.addNewGroup(group);
 		group = dbhandler.getGroup("uni");
 		group.owner = "God";
 		dbhandler.updateGroup(group);
 	}
-
 }
