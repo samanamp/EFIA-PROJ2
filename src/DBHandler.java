@@ -1,10 +1,6 @@
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 
 import org.lightcouch.CouchDbClient;
 import org.lightcouch.DocumentConflictException;
@@ -141,22 +137,22 @@ public class DBHandler {
 	public void closeConnection() {
 		dbClient.shutdown();
 	}
-	
-	//--------GROUPS--------------------------------------------
-	public void addNewGroup(Group group){
+
+	// --------GROUPS--------------------------------------------
+	public void addNewGroup(Group group) {
 		gson = new Gson();
 		String jsonString = gson.toJson(group);
 		JsonObject jsonobj = dbClient.getGson().fromJson(jsonString,
 				JsonObject.class);
-		dbClient.save(jsonobj);		
+		dbClient.save(jsonobj);
 	}
-	
+
 	public Group getGroup(String group_id) {
 		Group group = dbClient.find(Group.class, group_id);
 		return group;
 	}
-	
-	//TO-DO: CHECK FOR CONCURRENCY
+
+	// TO-DO: CHECK FOR CONCURRENCY
 	public void updateGroup(Group group) {
 		Gson gson = new Gson();
 		String jsonString = gson.toJson(group);
@@ -164,13 +160,24 @@ public class DBHandler {
 				JsonObject.class);
 		dbClient.update(jsonobj);
 	}
-	
-	public static void main(String [] args){
-		ArrayList <String> users = new ArrayList();
+
+	public void deleteGroup(String groupName) throws DocumentConflictException,
+			NoDocumentException {
+
+		Group group = this.getGroup(groupName);
+
+		String jsonString = gson.toJson(group);
+		JsonObject jsonobj = dbClient.getGson().fromJson(jsonString,
+				JsonObject.class);
+		dbClient.remove(jsonobj);
+	}
+
+	public static void main(String[] args) {
+		ArrayList<String> users = new ArrayList();
 		users.add("saman");
 		users.add("chalo");
 		users.add("checharo");
-		ArrayList <String> messages = new ArrayList();
+		ArrayList<String> messages = new ArrayList();
 		messages.add("Hola");
 		messages.add("como estas");
 		Group group = new Group("Samax", "chalo", users, messages);
