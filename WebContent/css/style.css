@@ -1,0 +1,69 @@
+/*a:link,
+a:visited {
+    border-bottom:1px solid #c55500; 
+    text-decoration:none;
+    color:#c55500; 
+}
+
+a:visited {
+    border-bottom:1px solid #730800; 
+    color:#730800;
+}
+
+a:hover,
+a:focus,
+a:active {
+    border:0; 
+    color:#fff; 
+    background:#c55500;
+}
+
+a:visited:hover,
+a:visited:focus,
+a:visited:active {
+    color:#fff; 
+    background:#730800;
+}
+*/
+
+
+#outercontainer{
+	min-height: 100%;
+	width: 100%;
+	margin: 0 auto; 
+	background: #000000;
+}
+
+#header{
+	overflow: visible;
+	text-align: center;
+	height: 100px;
+	width: 100%;
+	background: #999999;
+	font-size: 24px;
+	vertical-align: middle;
+	
+}
+#chatContainer{
+	background: #DDDDDD;
+	overflow: auto;
+}
+#toolbar{
+	text-align: center;
+	max-width: 80%;
+	margin-left: auto;
+	margin-right: auto;
+}
+#username{
+	width: 15%;
+}
+#message{
+	width: 35%;
+}
+#footer{
+	height: 50px;
+	border:0;
+	width: 100%;
+	margin: -50px auto 0 auto;
+	background: #DDDDDD;
+}

@@ -1,0 +1,49 @@
+/**********************************
+
+Name: cmxform Styles
+
+***********************************/
+form.cmxform {
+	width: 409px;
+	font-size: 1.0em;
+	color: #333;
+}
+
+form.cmxform fieldset {
+	border: 1px solid #aed0ea;
+}
+
+form.cmxform fieldset fieldset {
+	background: none;
+}
+
+form.cmxform fieldset p, form.cmxform fieldset fieldset {
+	padding: 5px 10px 7px;
+}
+/*
+ul.error,
+ul.success{
+	padding: 0.8em;
+	margin-bottom: 1em;
+	list-style-position: inside;
+}
+ul.error { 
+	display: none; 
+	width: 340px; 
+	margin: 0 auto; 
+	background: #fbe3e4;
+	color: #8a1f11;
+	border: 2px solid #fbc2c4;
+}
+ul.success{
+	width: 340px; 
+	margin: 0 auto;
+	background: #e6efc2;
+	color: #264409;
+	border: 2px solid #c6d880;
+}*/
+input {	border: 1px solid black; }
+input.checkbox { border: none }
+input:focus { border: 1px dotted black; }
+input.error { border: 1px dotted red; }
+form.cmxform .gray * { color: gray; }

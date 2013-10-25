@@ -1,0 +1,10 @@
+.ui-widget-content{border:none;}
+ul{list-style-position: inside;}
+h3{margin-bottom: 0;}
+a{color: #0070a3}
+#sending{color:#333;margin: 0.5em 0.4em 0.5em 0;display:block;padding: .4em 1em; text-align: right;}
+.ui-dialog-buttonpane button.large {font-size:1.3em;line-height:2.5em;margin:0.4em 0;}
+.center-text{text-align: center;}
+#chat_body{height: 350px;}
+.right{text-align: right;}
+

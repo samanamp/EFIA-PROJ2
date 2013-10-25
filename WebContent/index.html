@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+	<!-- 
+	<link rel="stylesheet" type="text/css" href="css/screen.css">
+	<link rel="stylesheet" type="text/css" href="css/bubbles.css">
+	<link rel="stylesheet" type="text/css" href="css/style.css"> -->
+	
+	<link rel="stylesheet" type="text/css" href="css/jquery-ui-1.10.3.custom.min.css">
+	<!-- Framework CSS -->
+    <link rel="stylesheet" href="css/blueprint/screen.css" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="css/blueprint/print.css" type="text/css" media="print">
+    <!--[if lt IE 8]><link rel="stylesheet" href="css/blueprint/ie.css" type="text/css" media="screen, projection"><![endif]-->
+    
+    <!-- Import fancy-type plugin for the sample page. -->
+    <link rel="stylesheet" href="css/blueprint/fancy-type/screen.css" type="text/css" media="screen, projection">
+    
+	
+	<link rel="stylesheet" type="text/css" href="css/core.css">
+	
+	
+	<script type="text/JavaScript" src="js/jquery/jquery.js"></script>
+	<script type="text/JavaScript" src="js/jquery/jquery-ui-1.10.3.custom.min.js"></script>
+	<script type="text/JavaScript" src="js/jquery/jquery.validate.min.js"></script>
+	<script type="text/JavaScript" src="js/javascript.js"></script>
+	<script type="text/JavaScript" src="js/chat.js"></script>
+	<title>Project 2 - Chat groups</title>
+</head>
+<body class="ui-widget-content">
+	<div class="container showgrid">
+		<div class="prepend-top center-text span-24 last">
+			<h1>Project 2</h1>
+			<h2 class="alt">This is an awesome chat for Project 2 of EIA</h2>
+		</div>
+		<div id="content_login" class="prepend-5 span-14 last">
+			<form id="frmLogin" class="cmxform">
+				<fieldset>
+					<legend>Login</legend>
+					<div class="push-1 span-12 last">
+						<label for="txtEmail" class="span-3 large">Email:</label>
+						<input type="text" id="txtEmail" name="txtEmail" class="title" title="Please enter your email address" size="30" />
+					</div>
+					<div class="push-1 span-12 last">
+						<label for="txtEmail" class="span-3 large">Password:</label>
+						<input type="password" id="txtPassword" name="txtPassword" class="title" title="Please enter your password" size="30"/>
+					</div>
+					
+					<ul class="error hide push-1 span-11 last" id="error"></ul>
+					
+					<div class="prepend-3 span-10 last">
+						<input type="submit" id="btnLogin" name="btnLogin" value="Login" class="title" />
+					</div>
+					
+					<div class="span-13 last">
+						<h3 class="prepend-3 span-4" id="lnk_register"><a href="javascript:void(0)">Register</a></h3>
+						<h3 class="span-5 last" id="lnk_reminder"><a href="javascript:void(0)">Forgot my password</a></h3>
+					</div>
+				</fieldset>
+			</form>
+		</div>
+		
+		<div id="content_register">
+			<form id="frm_register" class="cmxform">
+				<div class="prepend-1 span-10 last">
+					<label for="txt_register" class="span-2 large">Email:</label>
+					<input type="text" id="txt_register" name="txt_register" class="title span-7" 
+					title="Please enter your email address" size="30" />
+				</div>
+				
+				<ul class="error hide push-1 span-8 last" id="error"></ul>
+			</form>
+		</div>
+		
+		<div id="content_reminder">
+			<form id="frm_reminder" class="cmxform">
+				<div class="prepend-1 span-10 last">
+					<label for="txt_reminder" class="span-2 large">Email:</label>
+					<input type="text" id="txt_reminder" name="txt_reminder" title="Please enter your email address" size="30" class="title span-7"  />
+				</div>
+				
+				<ul class="error hide push-1 span-8 last" id="error"></ul>
+			</form>
+		</div>
+	</div>
+</body>
+</html>
