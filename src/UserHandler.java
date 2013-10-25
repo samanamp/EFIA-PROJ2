@@ -1,5 +1,10 @@
 import java.io.IOException;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+
+import org.lightcouch.NoDocumentException;
+
 public class UserHandler {
 
 	private DBHandler dbHandler;
@@ -8,23 +13,23 @@ public class UserHandler {
 	public UserHandler(String localServerAddress) {
 		dbHandler = new DBHandler();
 	}
-	
-	/* returns 2 if everything is ok 
-	 * returns 1 if user registered before
-	 * returns -2 for every other error
-	 * ignores if the user registered before
-	 * */
-	public int registerUser(String email){
-		try{
-		if (!dbHandler.ifUserExists(email)){
-			UserData user = new UserData();
-			user.setEmail(email);
-			
-			String token = SecureGen.generateSecureString(32);
-			user.setToken(token);
-			dbHandler.addNewUser(user);
-			return 2;
-		}}catch(Exception e){
+
+	/*
+	 * returns 2 if everything is ok returns 1 if user registered before returns
+	 * -2 for every other error ignores if the user registered before
+	 */
+	public int registerUser(String email) {
+		try {
+			if (!dbHandler.ifUserExists(email)) {
+				UserData user = new UserData();
+				user.setEmail(email);
+
+				String token = SecureGen.generateSecureString(32);
+				user.setToken(token);
+				dbHandler.addNewUser(user);
+				return 2;
+			}
+		} catch (Exception e) {
 			return -2;
 		}
 		return 1;
@@ -35,7 +40,7 @@ public class UserHandler {
 	 * returns 0 if user has requested it less than 5 minuts back returns -1 if
 	 * userDoesn't exist returns -2 with anyother error
 	 */
-	public int confirmEmail(String email) {
+	public int sendConfirmation(String email) {
 		try {
 			if (!dbHandler.ifUserExists(email))
 				return -1;
@@ -73,6 +78,33 @@ public class UserHandler {
 		EmailHandler emailHandler = new EmailHandler(newUser.getEmail(),
 				"Account Confirmation", confirmMessage);
 		emailHandler.start();
+	}
+
+	/*
+	 * returns 2 if successfull returns 1 if confirmed before return 0 if email
+	 * and token doesn't match returns -1 if user doesn't exist returns -2 any
+	 * other error
+	 */
+	public int confirm(String email, String token) {
+		try {
+			if (!dbHandler.ifUserExists(email))
+				return -1;
+
+			UserData userData = dbHandler.getUser(email);
+
+			if (userData.isConfirmed())
+				return 1;
+
+			if (!userData.getToken().equalsIgnoreCase(token))
+				return 0;
+
+			userData.setConfirmed(true);
+			SendPassword.sendNewPasswordForUser(userData);
+			dbHandler.updateUser(userData);
+			return 2;
+		} catch (Exception e) {
+			return -2;
+		}
 	}
 
 	public static void main(String[] args) {
