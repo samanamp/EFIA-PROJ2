@@ -1,4 +1,5 @@
 var divcounter = 0;
+var refreshMessages;
 var chat = {
 	init: function(){
 			$(window).resize(function() {
@@ -28,7 +29,10 @@ var chat = {
 			
 			chat.sendAJAX("", "");
 			
-			setInterval(function(){chat.sendAJAX("", "");}, 1000);
+			refreshMessages = setInterval(function(){chat.sendAJAX("", "");}, 1000);
+	},
+	stop: function(){
+		clearInterval(refreshMessages);
 	},
 	getSettingsHTML: function(){
 		return "<div id=\"settings\" class=\"span-16 last\">"
@@ -41,20 +45,20 @@ var chat = {
 		return "<div id=\"chat_body\" class=\"ui-widget span-16 last\">"
 				+ "<ul class=\"error\ push-2 span-12 last hide\"></ul>"
 				+ "<div id=\"outercontainer\" class=\"span-16 last\">"
-					+ "<div id=\"innercontainer\" class=\"span-16 last\"></div>"
+					+ "<div id=\"innercontainer\" class=\"span-16 last\">"
 						+ "<div id=\"messages_history\" class=\"push-2 span-12 last\"></div>"
 					+ "</div>"
-				+ "</div>"
-				+ "<div id=\"footer\" class=\"span-16 last\">"
-					+ "<div id=\"toolbar\" class=\"ui-widget-header ui-corner-all push-3 span-9 last\">"
-						+ "<div id=\"message_container\" class=\"prepend-1 span-5\">" 	
-							+ "<input type=\"text\" id=\"message\" name=\"message\" class=\"span-5\" />"
+					+ "<div id=\"footer\" class=\"span-16 last\">"
+						+ "<div id=\"toolbar\" class=\"ui-widget-header ui-corner-all push-3 span-9 last\">"
+							+ "<div id=\"message_container\" class=\"prepend-1 span-5\">" 	
+								+ "<input type=\"text\" id=\"message\" name=\"message\" class=\"span-5\" />"
+							+ "</div>"
+							+ "<div id=\"buttons_container\" class=\"span-3 last\">"
+								+ "<button id=\"btn_sendMessage\">Send</button>"
+								+ "<button id=\"btn_invite\">Invite</button>"
+							+ "<\div>"
+								
 						+ "</div>"
-						+ "<div id=\"buttons_container\" class=\"span-3 last\">"
-							+ "<button id=\"btn_sendMessage\">Send</button>"
-							+ "<button id=\"btn_invite\">Invite</button>"
-						+ "<\div>"
-							
 					+ "</div>"
 				+ "</div>"
 			+ "</div>";
@@ -64,7 +68,7 @@ var chat = {
 	},
 	setContentHeight: function() {
 			var bodyheight = $(window).height();
-			$("#messages_history").height(bodyheight - 200 );
+			$("#innercontainer").height(bodyheight - 200 );
 	},
 	sendMessage: function(){
 		//Do not accept empty messages

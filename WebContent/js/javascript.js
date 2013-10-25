@@ -1,5 +1,6 @@
 var token = null;
 var email = null;
+var loggedOutContent;
 var login = {
 		init: function(){
 			$.validator.setDefaults({
@@ -51,7 +52,7 @@ var login = {
 				event.preventDefault();
 			});
 
-			loggedOutContent = $("#content_login").html();
+			loggedOutContent = $("#content_login");
 			
 			login.setDialog("register", "Register", function(){login.sendRegister();});
 			login.setDialog("reminder", "Send reminder email", function(){login.sendReminder();});
@@ -346,8 +347,8 @@ var login = {
 					500,
 					function() {
 						$("#content_chat").remove();
-
-						$("#content").append(loggedOutContent);
+						
+						$(".container").append(loggedOutContent);
 						$(".success").remove();
 						if (message != null) {
 							if (messageClass == "error") {
@@ -362,6 +363,8 @@ var login = {
 						}
 
 						login.init();
+						loggedOutContent.fadeIn(300);
+						chat.stop();
 					});
 		},
 		sendReset: function() {
@@ -426,5 +429,5 @@ var login = {
 
 $(document).ready(function() {
 	login.init();
-//	login.generateLoggedInContent();
+	login.generateLoggedInContent();
 });
