@@ -18,7 +18,7 @@ public class SendPassword {
 		udata.setPassword(password);
 
 		// Send email address
-		String emailMessage = "The password for your proj1 account is: "
+		String emailMessage = "The password for your proj2 account is: "
 				+ password + "<br /> Keep it secret, keep it safe.";
 		EmailHandler emailHandler = new EmailHandler(email, "Account Password",
 				emailMessage);

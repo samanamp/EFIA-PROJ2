@@ -1,4 +1,5 @@
 package servlets;
+
 import handlers.DBHandler;
 import handlers.EmailHandler;
 import handlers.SecureGen;
@@ -144,7 +145,7 @@ public class Register extends HttpServlet {
 		String confirmMessage = "Please confirm your registration by clicking on following link: \n"
 				+ "<a href=\"http://"
 				+ request.getLocalAddr()
-				+ ":8080/proj1/Confirm?token="
+				+ ":8080/proj2/Confirm?token="
 				+ newUser.getToken()
 				+ "&email="
 				+ newUser.getEmail() + "\">Click me!</a>";
