@@ -1,6 +1,7 @@
 #Eclipse Project Files
 .settings/
 build/
+lib/
 target/
 .classpath
 .DS_Store
