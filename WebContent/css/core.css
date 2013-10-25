@@ -5,27 +5,33 @@ a{color: #0070a3}
 #sending{color:#333;margin: 0.5em 0.4em 0.5em 0;display:block;padding: .4em 1em; text-align: right;}
 .ui-dialog-buttonpane button.large {font-size:1.3em;line-height:2.5em;margin:0.4em 0;}
 .center-text{text-align: center;}
-#chat_body{min-height: 210px;}
+#chat_body{min-height: 280px;}
 .right{text-align: right;}
-#content_chat{margin-bottom: 0;background: #eeeeee;}
+#chat_container{margin-bottom: 0;background: #eeeeee;}
 #actions,#settings{height: 100%;}
 #actions button,#settings button{height: 70px;margin-bottom: 0;}
+#content_chat{height: 100%;}
 #messages_history{margin-bottom: 0; height: 100%;overflow: auto;}
 #toolbar{margin-bottom: 0;}
 
 
 
 .ui-button-icon-primary.ui-icon.btn_home,
-.ui-button-icon-primary.ui-icon.btn_group,
+.ui-button-icon-primary.ui-icon.btn_groups,
 .ui-button-icon-primary.ui-icon.btn_chat,
 .ui-button-icon-primary.ui-icon.btn_logout,
 .ui-button-icon-primary.ui-icon.btn_delete,
 .ui-button-icon-primary.ui-icon.btn_reset
  {height: 32px;width: 32px;margin: 0 0 2em -16px;text-align: center;left: 50%;top: 5px;}
-.ui-button-text-icon-primary .ui-button-text {display: block;position: static;padding: 35px 10px 5px 10px;font-size: 0.8em;}
+#actions .ui-button-text-icon-primary .ui-button-text,
+#settings .ui-button-text-icon-primary .ui-button-text  {display: block;position: static;padding: 35px 10px 5px 10px;font-size: 0.8em;}
 .btn_home {background-image: url(images/home.png) !important;}
-.btn_group {background-image: url(images/home.png) !important;}
+.btn_groups {background-image: url(images/groups.png) !important;}
 .btn_chat {background-image: url(images/chat.png) !important;}
 .btn_logout {background-image: url(images/logout.png) !important;}
 .btn_delete {background-image: url(images/delete.png) !important;}
 .btn_reset {background-image: url(images/reset.png) !important;}
+
+.ui-button-text {padding: .4em 0em .4em 1em;}
+
+#group_name{font-size: 16px;font-weight: bold;}

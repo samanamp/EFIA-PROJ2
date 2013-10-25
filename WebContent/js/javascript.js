@@ -1,6 +1,11 @@
-var token = null;
-var email = null;
+//var token = null;
+//var email = null;
+//var admin = null;
+var token = "aa";
+var admin = true;
+var email = "thisistheemail@email.com";
 var loggedOutContent;
+
 var login = {
 		init: function(){
 			$.validator.setDefaults({
@@ -54,144 +59,14 @@ var login = {
 
 			loggedOutContent = $("#content_login");
 			
-			login.setDialog("register", "Register", function(){login.sendRegister();});
-			login.setDialog("reminder", "Send reminder email", function(){login.sendReminder();});
+			utils.setDialog("register", "Register", function(){login.sendRegister();});
+			utils.setDialog("reminder", "Send reminder email", function(){login.sendReminder();});
 		},
-		setDialog: function(action, title, sendFunction){
-			var form_id = "#frm_" + action;
-			var txt_id = "#txt_" + action;
-			var content_id = "#content_" + action;
-			var button_id = "#btn_" + action;
-			var link_id = "#lnk_" + action;
+		getUserInfo: function(){
+			if(email != null && admin != null && token != null)
+				return {email: email, admin: admin};
 			
-			var frmValidator = $(form_id).validate({
-				errorLabelContainer : $(form_id + " ul#error")
-			});
-			
-			$(txt_id).rules('add', {
-				required : true,
-				email : true
-			});
-
-			$(content_id).dialog({
-				title: title,
-				buttons: [{
-					id : button_id,
-					text : title,
-					'class': 'large',
-					click : function() {
-						login.resetForm($(this));
-						if ($(form_id).valid()) {
-							sendFunction();
-						}
-					}
-				}],
-				autoOpen : false,
-				show : {
-					effect : "blind",
-					duration : 500
-				},
-				hide : {
-					effect : "explode",
-					duration : 500
-				},
-				resizable : false,
-				width : 450,
-				modal : true,
-				close: function() {
-					frmValidator.resetForm();
-					$(this).find("input").removeClass("error").val("");
-					login.resetForm($(this));
-				}
-			});
-
-			$(link_id + " a").bind("click", function() {
-				$(content_id).dialog("open");
-			});
-		},
-		resetForm: function (elem) {
-			elem.find(".error").html("");
-			$("#sending").remove();
-			$(".success").remove();
-		},
-		showLoading: function (text) {
-			return "<div id=\"sending\" class=\"span-7 last\">" +
-						"<h3>" +
-							"<img src=\"css/images/loading.gif\" />" +
-							text +
-						"</h3>" +
-					"</div>";
-		},
-		sendAjax: function(settings) {
-			/*******************************************************************************
-			 * Generic function to send an Ajax request to the Servlets. receives a JS
-			 * object (settings) containing: form_id, url, data, success
-			 ******************************************************************************/
-			if (settings.form_id == undefined)
-				settings.form_id = "";
-
-			if (settings.url == undefined)
-				settings.url = "";
-
-			if (settings.data == undefined)
-				settings.data = {};
-
-			if (settings.success == undefined)
-				settings.success = function() {
-				};
-
-			if (settings.loadingText == undefined)
-				settings.loadingText = "";
-
-			$.ajax({
-				type : "POST",
-				dataType : "json",
-				url : settings.url,
-				data : settings.data,
-				success : settings.success,
-				beforeSend : function() {
-					if ($(settings.form_id).parent(".ui-dialog-content").length > 0) {
-						$(settings.form_id).parent(".ui-dialog-content")
-								.siblings(".ui-dialog-buttonpane").find(
-										".ui-dialog-buttonset").find("button")
-								.hide();
-
-						$(settings.form_id).parent(".ui-dialog-content")
-								.siblings(".ui-dialog-buttonpane").find(
-										".ui-dialog-buttonset").append(
-												login.showLoading(settings.loadingText));
-
-					} else {
-						$(settings.form_id).find("input[type=submit]").hide()
-								.after(login.showLoading(settings.loadingText))// login
-					}
-
-				},
-				complete : function() {
-					$(settings.form_id).parent(".ui-dialog-content").siblings(
-							".ui-dialog-buttonpane").find("button").show();
-
-					$(settings.form_id).find("input[type=submit]").show();// for
-																			// login
-																			// case
-					$("#sending").remove();
-					$(settings.form_id).find(settings.form_id + " .success")
-							.remove();
-				},
-				error : function(jqXHR, textStatus, errorThrown) {
-					// this should never happen
-					$(settings.form_id)
-							.find("#error")
-							.html(
-									"<li>An error has ocurred: "
-											+ textStatus
-											+ ((errorThrown != undefined && errorThrown != "") ? ": "
-													+ errorThrown
-													: "")
-											+ ". <br />Please contact the system administrator.</li>")
-							.show();
-				}
-			});
+			login.sendLogout();
 		},
 		sendLogin: function() {
 			/*******************************************************************************
@@ -208,6 +83,7 @@ var login = {
 					if (data.success) {
 						token = data.token;
 						email = $("#txtEmail").val();
+						admin = data.admin;
 						login.generateLoggedInContent();
 					} else {
 						$("#frmLogin #error").html(
@@ -216,7 +92,7 @@ var login = {
 				},
 				loadingText : "Logging in..."
 			};
-			login.sendAjax(settings);
+			utils.sendAjax(settings);
 		},
 		generateLoggedInContent: function() {
 			/*******************************************************************************
@@ -224,7 +100,7 @@ var login = {
 			 ******************************************************************************/
 			$(".success").remove();
 			var new_div = $("<div />", {
-				id : "content_chat",
+				id : "chat_container",
 				'class': "push-4 span-16 ui-corner-all"
 			});
 			new_div.append(chat.getHTML)
@@ -280,7 +156,7 @@ var login = {
 				},
 				loadingText : "Registering user..."
 			};
-			login.sendAjax(settings);
+			utils.sendAjax(settings);
 		},
 		sendReminder: function() {
 			/*******************************************************************************
@@ -308,7 +184,7 @@ var login = {
 				},
 				loadingText : "Sending reminder..."
 			};
-			login.sendAjax(settings);
+			utils.sendAjax(settings);
 		},
 		sendLogout: function() {
 			/*******************************************************************************
@@ -326,6 +202,7 @@ var login = {
 					success : function(data) {
 						token = null;
 						email = null;
+						admin = null;
 						var error = null;
 						if (!data.success) {
 							error = data.error;
@@ -333,7 +210,7 @@ var login = {
 						login.generateLoggedOutContent(error, "error");
 					}
 				};
-				login.sendAjax(settings);
+				utils.sendAjax(settings);
 			} else {
 				login.generateLoggedOutContent("Invalid token.", "error");
 			}
@@ -343,10 +220,10 @@ var login = {
 			 * Generates the content that will appear when the user is logged out
 			 ******************************************************************************/
 			$(".success").remove();
-			$("#content_chat").fadeOut(
+			$("#chat_container").fadeOut(
 					500,
 					function() {
-						$("#content_chat").remove();
+						$("#chat_container").remove();
 						
 						$(".container").append(loggedOutContent);
 						$(".success").remove();
@@ -390,7 +267,7 @@ var login = {
 						}
 					}
 				};
-				login.sendAjax(settings);
+				utils.sendAjax(settings);
 			} else {
 				login.generateLoggedOutContent("Invalid token.", "error");
 			}
@@ -419,7 +296,7 @@ var login = {
 						}
 					}
 				};
-				login.sendAjax(settings);
+				utils.sendAjax(settings);
 			} else {
 				login.generateLoggedOutContent("Invalid token.", "error");
 			}
