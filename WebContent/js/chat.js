@@ -31,24 +31,26 @@ var chat = {
 			setInterval(function(){chat.sendAJAX("", "");}, 1000);
 	},
 	getSettingsHTML: function(){
-		return "<div id=\"settings\" class=\"span-15 last\">"
+		return "<div id=\"settings\" class=\"span-16 last\">"
 					+ "<h4 id=\"lnkLogout\" class=\"span-2 right last\"><a href=\"javascript:void(0)\">Logout</a></h4>"
 					+ "<h4 id=\"lnkDelete\" class=\"span-3 right\"><a href=\"javascript:void(0)\">Delete account</a></h4>"
 					+ "<h4 id=\"lnkReset\" class=\"span-4 right\"><a href=\"javascript:void(0)\">Reset my password</a></h4>"
 				+ "</div>";
 	},
 	getBodyHTML: function(){
-		return "<div id=\"chat_body\" class=\"ui-widget span-15 last\">"
-				+ "<ul class=\"error\ push-1 span-12 last hide\"></ul>"
-				+ "<div id=\"outercontainer\" class=\"span-15 last\">"
-					+ "<div id=\"messages_history\" class=\"span-15 last\"></div>"
+		return "<div id=\"chat_body\" class=\"ui-widget span-16 last\">"
+				+ "<ul class=\"error\ push-2 span-12 last hide\"></ul>"
+				+ "<div id=\"outercontainer\" class=\"span-16 last\">"
+					+ "<div id=\"innercontainer\" class=\"span-16 last\"></div>"
+						+ "<div id=\"messages_history\" class=\"push-2 span-12 last\"></div>"
+					+ "</div>"
 				+ "</div>"
-				+ "<div id=\"footer\" class=\"span-15 last\">"
-					+ "<div id=\"toolbar\" class=\"ui-widget-header ui-corner-all span-15 last\">"
+				+ "<div id=\"footer\" class=\"span-16 last\">"
+					+ "<div id=\"toolbar\" class=\"ui-widget-header ui-corner-all push-3 span-9 last\">"
 						+ "<div id=\"message_container\" class=\"prepend-1 span-5\">" 	
 							+ "<input type=\"text\" id=\"message\" name=\"message\" class=\"span-5\" />"
 						+ "</div>"
-						+ "<div id=\"buttons_container\" class=\"span-5\">"
+						+ "<div id=\"buttons_container\" class=\"span-3 last\">"
 							+ "<button id=\"btn_sendMessage\">Send</button>"
 							+ "<button id=\"btn_invite\">Invite</button>"
 						+ "<\div>"

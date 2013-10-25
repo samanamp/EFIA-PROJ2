@@ -224,7 +224,7 @@ var login = {
 			$(".success").remove();
 			var new_div = $("<div />", {
 				id : "content_chat",
-				'class': "prepend-4 span-16"
+				'class': "push-4 span-16"
 			});
 			new_div.append(chat.getHTML)
 				   .hide();
@@ -426,5 +426,5 @@ var login = {
 
 $(document).ready(function() {
 	login.init();
-	login.generateLoggedInContent();
+//	login.generateLoggedInContent();
 });

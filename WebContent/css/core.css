@@ -7,4 +7,8 @@ a{color: #0070a3}
 .center-text{text-align: center;}
 #chat_body{height: 350px;}
 .right{text-align: right;}
+#content_chat{background: #CCCCCC;}
+#settings{background: #DDDDDD;}
+#messages_history{background: #AAAAAA; margin-bottom: 0;}
+#toolbar{margin-bottom: 0;}
 
