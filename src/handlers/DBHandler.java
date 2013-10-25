@@ -154,12 +154,16 @@ public class DBHandler {
 		dbClient.save(jsonobj);
 	}
 
-	public Group getGroup(String group_id) {
-		Group group = dbClient.find(Group.class, group_id);
+	public Group getGroup(String groupID) {
+		Group group = dbClient.find(Group.class, groupID);
 		return group;
 	}
 
 	// TO-DO: CHECK FOR CONCURRENCY
+	/* NOTE: Concurrency is already taken care of because of the synchronized way
+	 * of implementing the logic in the Servlet. Since only one instance of the 
+	 * Servlet exists per deployment, this logic can only be called by the only Thread
+	 * belonging to the Servlet. */
 	public void updateGroup(Group group) {
 		Gson gson = new Gson();
 		String jsonString = gson.toJson(group);
@@ -168,30 +172,14 @@ public class DBHandler {
 		dbClient.update(jsonobj);
 	}
 
-	public void deleteGroup(String groupName) throws DocumentConflictException,
+	public void deleteGroup(String groupID) throws DocumentConflictException,
 			NoDocumentException {
 
-		Group group = this.getGroup(groupName);
+		Group group = this.getGroup(groupID);
 
 		String jsonString = gson.toJson(group);
 		JsonObject jsonobj = dbClient.getGson().fromJson(jsonString,
 				JsonObject.class);
 		dbClient.remove(jsonobj);
-	}
-
-	public static void main(String[] args) {
-		ArrayList<String> users = new ArrayList();
-		users.add("saman");
-		users.add("chalo");
-		users.add("checharo");
-		ArrayList<String> messages = new ArrayList();
-		messages.add("Hola");
-		messages.add("como estas");
-		Group group = new Group("Samax", "chalo", users, messages);
-		DBHandler dbhandler = new DBHandler();
-		dbhandler.addNewGroup(group);
-		group = dbhandler.getGroup("uni");
-		group.owner = "God";
-		dbhandler.updateGroup(group);
 	}
 }

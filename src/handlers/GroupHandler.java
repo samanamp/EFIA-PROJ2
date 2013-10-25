@@ -3,6 +3,8 @@ package handlers;
 import java.util.ArrayList;
 
 import data.Group;
+import data.Membership;
+import data.Message;
 
 
 public class GroupHandler {
@@ -12,43 +14,71 @@ public class GroupHandler {
 		dbHandler = new DBHandler();
 	}
 	
-	public void addNewGroup(String groupName, String owner){
+	//TODO Check for existing groupName for that owner.
+	/**
+	 * 
+	 * @param groupName
+	 * @param owner
+	 */
+	public void addNewGroup(String groupName, String owner) {
 		Group group = new Group(groupName, owner);
 		dbHandler.addNewGroup(group);		
 	}
 	
-	public void addNewUserToGroup(String groupName, String newUserEmail){
-		Group group = dbHandler.getGroup(groupName);
-		group.users.add(newUserEmail);
+	//TODO Implement the invitation token logic
+	/**
+	 * 
+	 * @param groupID
+	 * @param newUserEmail
+	 */
+	public void addNewUserToGroup(String groupID, String newUserEmail) {
+		Group group = dbHandler.getGroup(groupID);
+		group.getUsers().add(new Membership(newUserEmail, ""));
 		dbHandler.updateGroup(group);
 	}
 	
-	public void addNewMessageToGroup(String groupName, String newMessage){
-		Group group = dbHandler.getGroup(groupName);
-		group.messages.add(newMessage);
+	/**
+	 * 
+	 * @param groupID
+	 * @param newMessage
+	 */
+	public void addNewMessageToGroup(String groupID, Message newMessage){
+		Group group = dbHandler.getGroup(groupID);
+		group.getMessages().add(newMessage);
 		dbHandler.updateGroup(group);
 	}
 	
-	public Group getGroup(String groupName){
-		return dbHandler.getGroup(groupName);
+	/**
+	 * 
+	 * @param groupID
+	 * @return
+	 */
+	public Group getGroup(String groupID){
+		return dbHandler.getGroup(groupID);
 	}
 	
-	public ArrayList <String> getMessagesOfGroup(String groupName){
-		return dbHandler.getGroup(groupName).messages;
+	/**
+	 * 
+	 * @param groupID
+	 * @return
+	 */
+	public ArrayList<Message> getMessagesOfGroup(String groupID){
+		return dbHandler.getGroup(groupID).getMessages();
 	}
 	
-	public void removeGroup(String groupName){
-		dbHandler.deleteGroup(groupName);
-		
+	/**
+	 * 
+	 * @param groupID
+	 */
+	public void removeGroup(String groupID){
+		dbHandler.deleteGroup(groupID);
 	}
-	
 	
 	public static void main(String[] args) {
 		GroupHandler gh = new GroupHandler();
-		gh.addNewGroup("newGroupHandler", "everybody");
-		gh.addNewUserToGroup("newGroupHandler", "MySelf");
-		gh.addNewMessageToGroup("newGroupHandler", "Samn Aleyk");		
-
+		//gh.addNewGroup("group2", "cesarm@student.unimelb.edu.au");
+		//gh.addNewUserToGroup("70c08dba008d40fca436dc3738dfe112", "samana@unimelb.edu.au");
+		//gh.addNewMessageToGroup("70c08dba008d40fca436dc3738dfe112", new Message("samana@student.unimelb.edu.au", "Hola cesar!", 1382706613626l));		
 	}
 
 }
