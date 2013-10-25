@@ -225,7 +225,7 @@ var login = {
 			$(".success").remove();
 			var new_div = $("<div />", {
 				id : "content_chat",
-				'class': "push-4 span-16"
+				'class': "push-4 span-16 ui-corner-all"
 			});
 			new_div.append(chat.getHTML)
 				   .hide();
@@ -235,16 +235,16 @@ var login = {
 
 				$(".container").append(new_div);
 
-				$("#lnkLogout").bind("click", function() {
+				$("#btn_logout").bind("click", function() {
 					login.sendLogout();
 				});
 
-				$("#lnkReset").bind("click", function() {
+				$("#btn_reset").bind("click", function() {
 					$(".success").remove();
 					login.sendReset();
 				});
 
-				$("#lnkDelete").bind("click", function() {
+				$("#btn_delete").bind("click", function() {
 					$(".success").remove();
 					login.sendDelete();
 				});
@@ -361,10 +361,9 @@ var login = {
 												+ "</li></ul>");
 							}
 						}
-
+						chat.stop();
 						login.init();
 						loggedOutContent.fadeIn(300);
-						chat.stop();
 					});
 		},
 		sendReset: function() {

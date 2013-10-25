@@ -1,3 +1,5 @@
+//TODO return if the user is admin of group or not.
+//
 var divcounter = 0;
 var refreshMessages;
 var chat = {
@@ -8,19 +10,16 @@ var chat = {
 	
 			chat.setContentHeight();
 	
-			$("#btn_sendMessage").button({
-				text: false,
-				icons: {
-					primary: "ui-icon-comment"
-				}
-			});
+			$("#btn_sendMessage").button({text: false,icons: {primary: "ui-icon-comment"}});
+			$("#btn_invite").button({text: false,icons: {primary: "ui-icon-person"}});
+			$("#btn_leave").button({text: false,icons: {primary: "ui-icon-arrowstop-1-e"}});
 			
-			$("#btn_invite").button({
-				text: false,
-				icons: {
-					primary: "ui-icon-person"
-				}
-			});
+			$("#btn_home").button({icons: {primary: "btn_home"}});
+			$("#btn_chat").button({icons: {primary: "btn_chat"}});
+			
+			$("#btn_logout").button({icons: {primary: "btn_logout"}});		
+			$("#btn_delete").button({icons: {primary: "btn_delete"}});
+			$("#btn_reset").button({icons: {primary: "btn_reset"}});
 	
 			//register functions to  events
 			$("#btn_sendMessage").bind("click", function() { chat.sendMessage(); });
@@ -34,41 +33,47 @@ var chat = {
 	stop: function(){
 		clearInterval(refreshMessages);
 	},
-	getSettingsHTML: function(){
-		return "<div id=\"settings\" class=\"span-16 last\">"
-					+ "<h4 id=\"lnkLogout\" class=\"span-2 right last\"><a href=\"javascript:void(0)\">Logout</a></h4>"
-					+ "<h4 id=\"lnkDelete\" class=\"span-3 right\"><a href=\"javascript:void(0)\">Delete account</a></h4>"
-					+ "<h4 id=\"lnkReset\" class=\"span-4 right\"><a href=\"javascript:void(0)\">Reset my password</a></h4>"
-				+ "</div>";
-	},
 	getBodyHTML: function(){
 		return "<div id=\"chat_body\" class=\"ui-widget span-16 last\">"
-				+ "<ul class=\"error\ push-2 span-12 last hide\"></ul>"
-				+ "<div id=\"outercontainer\" class=\"span-16 last\">"
-					+ "<div id=\"innercontainer\" class=\"span-16 last\">"
-						+ "<div id=\"messages_history\" class=\"push-2 span-12 last\"></div>"
+		
+					+ "<ul class=\"error\ push-2 span-12 last hide\"></ul>"
+					
+					+ "<div id=\"actions\" class=\"span-2\">"
+						//+ "<button id=\"btn_home\" class=\"span-2 last\"><a href=\"javascript:void(0)\">Home</a></button>"
+						+ "<button id=\"btn_home\" class=\"span-2 last\"><a href=\"javascript:void(0)\">Home</a></button>"
+						+ "<button id=\"btn_chat\" class=\"span-2 last\"><a href=\"javascript:void(0)\">Chat</a></button>"
 					+ "</div>"
-					+ "<div id=\"footer\" class=\"span-16 last\">"
-						+ "<div id=\"toolbar\" class=\"ui-widget-header ui-corner-all push-3 span-9 last\">"
-							+ "<div id=\"message_container\" class=\"prepend-1 span-5\">" 	
-								+ "<input type=\"text\" id=\"message\" name=\"message\" class=\"span-5\" />"
-							+ "</div>"
-							+ "<div id=\"buttons_container\" class=\"span-3 last\">"
-								+ "<button id=\"btn_sendMessage\">Send</button>"
-								+ "<button id=\"btn_invite\">Invite</button>"
-							+ "<\div>"
-								
+					
+					+ "<div id=\"messages_history\" class=\"span-12\"></div>"
+					
+					+ "<div id=\"settings\" class=\"span-2 last\">"
+						+ "<button id=\"btn_logout\" class=\"span-2 last\"><a href=\"javascript:void(0)\">Logout</a></button>"
+						+ "<button id=\"btn_delete\" class=\"span-2 last\"><a href=\"javascript:void(0)\">Delete account</a></button>"
+						+ "<button id=\"btn_reset\" class=\"span-2 last\"><a href=\"javascript:void(0)\">Reset password</a></button>"
+					+ "</div>"
+				+ "</div>"
+				
+				+ "<div id=\"footer\" class=\"span-16 last\">"
+					+ "<div id=\"toolbar\" class=\"ui-widget-header ui-corner-all push-3 span-9 last\">"
+						+ "<div id=\"message_container\" class=\"prepend-1 span-5\">" 	
+							+ "<input type=\"text\" id=\"message\" name=\"message\" class=\"span-5\" />"
 						+ "</div>"
+						
+						+ "<div id=\"buttons_container\" class=\"span-3 last\">"
+							+ "<button id=\"btn_sendMessage\">Send</button>"
+							+ "<button id=\"btn_invite\">Invite</button>"
+							+ "<button id=\"btn_leave\">Leave group</button>"
+						+ "<\div>"								
 					+ "</div>"
 				+ "</div>"
 			+ "</div>";
 	},
 	getHTML: function(){
-		return chat.getSettingsHTML() + chat.getBodyHTML()
+		return chat.getBodyHTML()
 	},
 	setContentHeight: function() {
 			var bodyheight = $(window).height();
-			$("#innercontainer").height(bodyheight - 200 );
+			$("#chat_body").height(bodyheight - 162 );
 	},
 	sendMessage: function(){
 		//Do not accept empty messages
