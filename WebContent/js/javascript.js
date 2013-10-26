@@ -169,6 +169,7 @@ var login = {
 			 * Function to send a request to the Logout Servlet it uses the sendAjax
 			 * function
 			 ******************************************************************************/
+			chat.lastMessage = 0;
 			if (login.email != null && login.token != null && login.admin != null) {
 				var settings = {
 					form_id : "#frmLogin",

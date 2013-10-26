@@ -1,10 +1,8 @@
-//TODO return if the user is admin of group or not.
-
 var refreshMessages = null;
-var lastMessage = 0;
 var groupID;
 
 var chat = {
+	lastMessage: 0,
 	init: function(){
 			if(!login.verifySession())
 				return;
@@ -176,7 +174,7 @@ var chat = {
 			 "token" : login.token,
 			 "group_id" : group_id,
 			 "message" : message,
-			 "msghead" : lastMessage
+			 "msghead" : chat.lastMessage
 			}, chat.addNewMessage);
 	},
 	addNewMessage: function(data) {//TODO return {messages:[{email:"",message:"",timestamp:""}]}
@@ -189,7 +187,7 @@ var chat = {
 					+ '<blockquote class="' + side_class + '">' + m.message + '</blockquote>'
 					+ '<p>' + millis + ' - ' + m.user +  ' </p>'
 					+ '</div>').appendTo('#messages_history');
-				lastMessage = m.timestamp;
+				chat.lastMessage = m.timestamp;
 			});
 	
 		} else{
@@ -276,27 +274,28 @@ var chat = {
 			};
 			utils.sendAjax(settings);
 	},
-	sendDeleteGroup: function(id){
+	sendDeleteGroup: function(group_id){
 		login.verifySession();
-		alert("should delete the group " + id);
-//		var settings = {
-//			form_id : "",
+		var settings = {
+			form_id : "",
 //			btn_id : button,
-//			url : "GroupServlet",
-//			data : {
-//				"email" : login.email,
-//				"groupID" : groupID
-//			},
-//			success : function(data) {
-//				if (data.success) {
-//					chat.init();
-//				} else{
-//					$("#chat_body #error").html(
-//							"<li>" + data.error + "</li>").show();
-//				}
-//			}
-//		};
-//		utils.sendAjax(settings);
+			url : "GroupServlet",
+			data : {
+				"method" : "removegroup",
+				"email" : login.email,
+				"token" : login.token,
+				"group_id" : group_id
+			},
+			success : function(data) {
+				if (data.success) {
+					chat.getGroups();
+				} else{
+					$("#chat_body #error").html(
+							"<li>" + data.error + "</li>").show();
+				}
+			}
+		};
+		utils.sendAjax(settings);
 	},
 	sendDeleteUserGroup: function(group, user){
 		login.verifySession();
@@ -333,7 +332,7 @@ var chat = {
 	},
 	getGroups: function(){
 		login.verifySession();
-		lastMessage = 0;
+		chat.lastMessage = 0;
 		chat.stop();
 		var settings = {
 			form_id : "",
@@ -376,7 +375,6 @@ var chat = {
 						.bind('click', function(){
 							chat.getGroups();
 						});
-//					$("#btn_chat").button({icons: {primary: "btn_chat"}});
 					
 					chat.initGroupsManager();
 					
