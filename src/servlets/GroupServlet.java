@@ -200,7 +200,7 @@ public class GroupServlet extends HttpServlet {
 			}
 			
 			GroupHandler groupHandler = new GroupHandler(request.getLocalAddr());
-			groupHandler.addNewUserToGroup(groupID, newUser);
+			groupHandler.addNewUserToGroup(groupID, newUser, userSession.getEmail());
 			res.put("success", true);
 		} catch (CustomException ce) {
 			res.put("success", false);
