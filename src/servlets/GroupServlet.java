@@ -75,7 +75,7 @@ public class GroupServlet extends HttpServlet {
 			res = executeListGroups(request, userSession);
 		} else {
 			res.put("success", false);
-			res.put("error", "Could not recognize method: ." + method);
+			res.put("error", "Could not recognize method: " + method);
 		}
 		
 		// respond to the web browser
@@ -132,6 +132,7 @@ public class GroupServlet extends HttpServlet {
 			for (Group group : groups) {
 				JSONObject jgroup = new JSONObject();
 				jgroup.put("name", group.getName());
+				jgroup.put("owner", group.getOwner());
 				jgroup.put("id", group.get_id());
 				jgroups.add(jgroup);
 			}			

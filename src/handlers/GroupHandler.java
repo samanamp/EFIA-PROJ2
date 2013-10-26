@@ -128,8 +128,10 @@ public class GroupHandler {
 		boolean ifUserIsAMember = false;
 		ArrayList <Membership> members = group.getUsers();
 		for(Membership member:members){
-			if(member.getEmail().equalsIgnoreCase(newMessage.getUser()))
+			if(member.getEmail().equalsIgnoreCase(newMessage.getUser())) {
 				ifUserIsAMember=true;
+				break;
+			}
 		}
 		
 		if(!ifUserIsAMember)
@@ -137,6 +139,18 @@ public class GroupHandler {
 		
 		group.getMessages().add(newMessage);
 		dbHandler.updateGroup(group);
+	}
+	
+	public boolean userIsMember(String user, Group group) {
+		boolean ifUserIsAMember = false;
+		for(Membership member : group.getUsers()) {
+			if(member.getEmail().equalsIgnoreCase(user)) {
+				ifUserIsAMember = true;
+				break;
+			}
+		}
+		
+		return ifUserIsAMember;
 	}
 
 	/**
@@ -165,12 +179,13 @@ public class GroupHandler {
 		dbHandler.deleteGroup(groupID);
 	}
 
-	public static void main(String[] args) {
-		//GroupHandler gh = new GroupHandler("127.0.0.1");
+	public static void main(String[] args) throws Exception {
+		GroupHandler gh = new GroupHandler("127.0.0.1");
 		//gh.addNewGroup("Samax", "saman.bonab@gmail.com");
 		//System.out.println(gh.addNewMessageToGroup("669caff1efad4a2bb2567a3682630758", new Message("cesarm@unimelb.edu.au", "hi everybody", 12346443)));
 		//System.out.println(gh.confirmNewUser("669caff1efad4a2bb2567a3682630758", "samani", "o4kstpm4ec3cvc75lnhsui9g0fpa9tgo"));
 		//System.out.println(gh.confirmNewUser("669caff1efad4a2bb2567a3682630758", "cesarm@unimelb.edu.au", "o4kstpm4ec3cvc75lnhsui9g0fpa9tgo"));
+		//gh.addNewMessageToGroup("70c08dba008d40fca436dc3738dfe112", new Message("edwinsp@student.unimelb.edu.au", "hola", 1));
 
 	}
 }
