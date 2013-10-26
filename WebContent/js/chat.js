@@ -14,15 +14,12 @@ var chat = {
 			});
 	
 			chat.setContentHeight();
-	
-			
-			
 			chat.getGroups();
 	},
 	initGroupsManager: function(){
 		
 		utils.setDialog("create", "Create a new group", function(){chat.sendCreate();},{required : true, alphanumeric : true});
-		$("#lnk_create").button({icons: {primary: "ui-icon-circle-plus"},text:false});
+		$("#lnk_create").button({icons: {primary: "ui-icon-circle-plus"}});
 		$("#groups_accordion").accordion({
 		      collapsible: true,
 		      icons: null,//TODO fix the icons
@@ -49,12 +46,14 @@ var chat = {
 			$(this).button({icons: {primary: "ui-icon-comment"},text:false})
 				.bind("click", function(){
 					var params = $(this).attr("id").split("_");
+					login.admin = params[3];
 					chat.sendOpenGroup(params[2]);
 				});
 		});
 		
 	},
 	initChatRoom: function(group_id){
+		chat.setContentHeight();
 		//register functions to  events
 		$("#btn_sendMessage")
 			.bind("click", function() { chat.sendMessage(group_id); })
@@ -70,7 +69,7 @@ var chat = {
 		refreshMessages = setInterval(function(){chat.sendAJAX("", group_id);}, 1000);
 		
 		alert($("#content_chat #content_invite").length);
-		utils.setDialog("invite", "Invite a friend", function(){chat.sendInvitation();});
+		utils.setDialog("invite", "Invite a friend", function(){chat.sendInvitation(group_id);}, {required : true,email : true});
 		
 		if(!login.admin){
 			$("#btn_leave").bind('click', function(){
@@ -83,11 +82,11 @@ var chat = {
 	},
 	getChatHTML: function(){
 		return "<div class=\"outer_container\">"
-					+ "<div id=\"group_name\" class=\"inner_content span-12 ui-button-text\"><h3>Chat name</h3></div>"
-					+ "<div id=\"messages_history\" class=\"span-12\"></div>"
+					+ "<div id=\"group_name\" class=\"span-12 ui-button-text\"><h3>Chat name</h3></div>"
+					+ "<div id=\"messages_history\" class=\"inner_content span-12\"></div>"
 					
 					+ "<div id=\"footer\" class=\"span-16 last\">"
-						+ "<div id=\"toolbar\" class=\"ui-widget-header ui-corner-all push-3 span-9 last\">"
+						+ "<div id=\"toolbar\" class=\"ui-widget-header ui-corner-all push-1 span-9 last\">"
 							+ "<div id=\"message_container\" class=\"prepend-1 span-5\">" 	
 							+ "<input type=\"text\" id=\"message\" name=\"message\" class=\"span-5\" />"
 						+ "</div>"
@@ -131,7 +130,7 @@ var chat = {
 							
 							+ "<div id=\"footer\" class=\"span-14 last\">"
 								+ "<div id=\"toolbar\" class=\"ui-widget-header ui-corner-all push-2 span-9 last\">"
-									+ "<div id=\"buttons_container\" class=\"span-3 last\">"
+									+ "<div id=\"buttons_container\" class=\"prepend-2 span-5 last\">"
 										+ "<button id=\"lnk_create\">Create new group</button>"
 									+ "<\div>"								
 								+ "</div>"
@@ -181,15 +180,14 @@ var chat = {
 			}, chat.addNewMessage);
 	},
 	addNewMessage: function(data) {//TODO return {messages:[{email:"",message:"",timestamp:""}]}
-		alert(data);
 		if(data.success) {
 			$.each(data.messages, function(i){
 				var m = $(this)[0];
 				var millis = new Date(m.timestamp).toString();
-				var side_class = "bubble-" + (m.email == login.email ? "right" : "left");
+				var side_class = "bubble-" + (m.user == login.email ? "right" : "left");
 				$('<div>'
 					+ '<blockquote class="' + side_class + '">' + m.message + '</blockquote>'
-					+ '<p>' + millis + ' - ' + m.email +  ' </p>'
+					+ '<p>' + millis + ' - ' + m.user +  ' </p>'
 					+ '</div>').appendTo('#messages_history');
 				lastMessage = m.timestamp;
 			});
@@ -199,25 +197,28 @@ var chat = {
 					"<li>" + data.error + "</li>").show();
 		}
 	},
-	sendInvitation: function(){//TODO testing
+	sendInvitation: function(group_id){//TODO testing
 		login.verifySession();
 		var settings = {
 				form_id : "#frm_invitation",
 				btn_id : "#btn_invite",
 				url : "GroupServlet",
 				data : {
-					"email" : $("#txt_invitation").val(),
-					"action": "invitation"
+					"email" : login.email,
+					"token" : login.token,
+					"method": "adduser",
+					"group_id": group_id,
+					"newuser" : $("#txt_invite").val()
 				},
 				success : function(data) {
 					if (data.success) {
-						$("#frm_invitation")
+						$("#frm_invite")
 								.append(
-										"<ul class=\"success\"><li>"
+										"<ul class=\"success push-1 span-8 last\"><li>"
 												+ "Your invitation has been sent successfully."
 												+ "</li></ul>");
 					} else {
-						$("#frm_invitation #error").html(
+						$("#frm_invite #error").html(
 								"<li>" + data.error + "</li>").show();
 					}
 				},
@@ -323,7 +324,7 @@ var chat = {
 		$(".outer_container").fadeOut(300, function(){
 			$(".outer_container").remove();
 			
-			$("#content_chat").html(chat.getChatHTML()+chat.getInviteHTML());alert($("#content_chat").html());
+			$("#content_chat").html(chat.getChatHTML()+chat.getInviteHTML());
 			chat.initChatRoom(group);
 		});
 	},
@@ -387,10 +388,11 @@ var chat = {
 	getGroupsList: function(groups){
 		var list = "";
 		$.each(groups, function(i, g){
-			var side_class = "group-" + (g.owner == login.email ? "right" : "");
+			var admin = (g.owner == login.email);
+			var side_class = "group-" + (admin ? "right" : "");
 			list += '<div class="group span-12">'
 					+ '<h3 class="' + side_class + ' span-10">' + g.name + '</h3>'
-					+ '<button id=\"btn_open_' + g.id + '\" class="btn_open_group"><a href=\"javascript:void(0)\">Open group</a></button>'
+					+ '<button id=\"btn_open_' + g.id + '_' + admin + '\" class="btn_open_group"><a href=\"javascript:void(0)\">Open group</a></button>'
 					+ '<button id=\"' + g.id + '\" class="btn_delete_group"><a href=\"javascript:void(0)\">Delete</a></button>'
 				 + '</div>'
 					+ '<div>'
