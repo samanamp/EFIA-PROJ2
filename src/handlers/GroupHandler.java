@@ -47,7 +47,7 @@ public class GroupHandler {
 	 * @param newUserEmail
 	 * 
 	 */
-	public void addNewUserToGroup(String groupID, String newMemberEmail) throws CustomException {
+	public void addNewUserToGroup(String groupID, String newMemberEmail, String ownerEmail) throws CustomException {
 		try {
 			Membership newMember = new Membership(newMemberEmail,
 					SecureGen.generateSecureString(32));
@@ -57,6 +57,8 @@ public class GroupHandler {
 				throw new CustomException("Group", "There is no such user");
 
 			Group group = dbHandler.getGroup(groupID);
+			if(!group.getOwner().equalsIgnoreCase(ownerEmail))
+				throw new CustomException("Group","Unauthorized, you should be admin");
 			ArrayList<Membership> members = group.getUsers();
 
 			boolean userIsAMember = false;
@@ -125,16 +127,8 @@ public class GroupHandler {
 	 */
 	public void addNewMessageToGroup(String groupID, Message newMessage) throws CustomException {
 		Group group = dbHandler.getGroup(groupID);
-		boolean ifUserIsAMember = false;
-		ArrayList <Membership> members = group.getUsers();
-		for(Membership member:members){
-			if(member.getEmail().equalsIgnoreCase(newMessage.getUser())) {
-				ifUserIsAMember=true;
-				break;
-			}
-		}
 		
-		if(!ifUserIsAMember)
+		if(!userIsMember(newMessage.getUser(), group))
 			throw new CustomException("Group", "The user doesn't have permission to post");
 		
 		group.getMessages().add(newMessage);
@@ -166,16 +160,41 @@ public class GroupHandler {
 	 * 
 	 * @param groupID
 	 * @return
+	 * @throws CustomException 
 	 */
-	public ArrayList<Message> getMessagesOfGroup(String groupID) {
-		return dbHandler.getGroup(groupID).getMessages();
+	public ArrayList<Message> getMessagesOfGroup(String groupID,String userEmail) throws CustomException {
+		Group group = dbHandler.getGroup(groupID);
+		if(userIsMember(userEmail, group))		
+			return dbHandler.getGroup(groupID).getMessages();
+		else
+			throw new CustomException("User","Un-Authorized access");
 	}
 
+	public void removeTheUser(String groupID, String user) throws CustomException{
+		Group group = dbHandler.getGroup(groupID);
+		if(!userIsMember(user, group))		
+			throw new CustomException("User","Un-Authorized access");
+		
+		ArrayList<Membership> members = group.getUsers();
+
+		boolean userIsAMember = false;
+		for (Membership member : members) {
+			if (member.getEmail().equalsIgnoreCase(user)){
+				members.remove(member);
+				group.setUsers(members);
+				dbHandler.updateGroup(group);
+			}
+		}		
+	}
 	/**
 	 * 
 	 * @param groupID
+	 * @throws CustomException 
 	 */
-	public void removeGroup(String groupID) {
+	public void removeGroup(String groupID, String userEmail) throws CustomException {
+		Group group = dbHandler.getGroup(groupID);
+		if(!group.getOwner().equalsIgnoreCase(userEmail))
+			throw new CustomException("user","Unauthorized Action, you should be admin");
 		dbHandler.deleteGroup(groupID);
 	}
 

@@ -121,7 +121,7 @@ public class Chat extends HttpServlet {
 			}
 			
 			//Obtain messages 
-			ArrayList<Message> messages = groupHandler.getMessagesOfGroup(groupID);
+			ArrayList<Message> messages = groupHandler.getMessagesOfGroup(groupID,user);
 			JSONArray jmessages = new JSONArray();
 			for (Message msg : messages) {
 				if (msg.getTimestamp() <= msgHead)
