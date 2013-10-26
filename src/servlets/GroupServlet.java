@@ -93,7 +93,7 @@ public class GroupServlet extends HttpServlet {
 				return res;
 			}
 			
-			GroupHandler groupHandler = new GroupHandler();
+			GroupHandler groupHandler = new GroupHandler(request.getLocalAddr());
 			groupHandler.addNewGroup(groupName, userSession.getEmail());
 			
 		} catch (CustomException ce) {
