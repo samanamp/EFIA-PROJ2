@@ -3,6 +3,8 @@ package handlers;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.lightcouch.NoDocumentException;
+
 import data.Group;
 import data.Membership;
 import data.Message;
@@ -201,9 +203,16 @@ public class GroupHandler {
 	 * @throws CustomException 
 	 */
 	public void removeGroup(String groupID, String userEmail) throws CustomException {
-		Group group = dbHandler.getGroup(groupID);
+		Group group;
+		try {
+			group = dbHandler.getGroup(groupID);
+		} catch (NoDocumentException nde) {
+			throw new CustomException("user","The group specified does not exist.");
+		}
+		
 		if(!group.getOwner().equalsIgnoreCase(userEmail))
-			throw new CustomException("user","Unauthorized Action, you should be admin");
+			throw new CustomException("user","Unauthorized action, only the group "
+					+ "owner can delete the group");
 		dbHandler.deleteGroup(groupID);
 	}
 

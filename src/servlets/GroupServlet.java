@@ -59,6 +59,7 @@ public class GroupServlet extends HttpServlet {
 		UserSession userSession = new UserSession(email);
 		userSession.verifySession(dbh, email, token);
 		
+		/* Choose which method has to be executed */
 		if (method == null || method.equals("")) {
 			res.put("success", false);
 			res.put("error", "A method has to be defined.");
@@ -106,6 +107,14 @@ public class GroupServlet extends HttpServlet {
 			} else {
 				res = executeRemoveUser(request, userSession, exUser, groupID);
 			}
+		} else if (method.equals("removegroup")) {
+			String groupID = request.getParameter("group_id");
+			if (groupID == null || groupID.equals("")) {
+				res.put("success", false);
+				res.put("error", "A valid group_id must be specified.");
+			} else {
+				res = executeRemoveGroup(request, userSession, groupID);
+			}
 		} else {
 			res.put("success", false);
 			res.put("error", "Could not recognize method: " + method);
@@ -144,6 +153,40 @@ public class GroupServlet extends HttpServlet {
 		} catch (CustomException ce) {
 			res.put("success", false);
 			res.put("error", "The group defined already exists for " + userSession.getEmail());
+		} catch (Exception e) {
+			res.put("success", false);
+			res.put("error", "Unknown error at the Server: " + getStackTrace(e));
+		}
+		
+		return res;
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @param userSession
+	 * @param groupName
+	 * @return
+	 */
+	public synchronized JSONObject executeRemoveGroup(HttpServletRequest request, 
+			UserSession userSession, String groupID) {
+		
+		JSONObject res = new JSONObject();
+		
+		try {
+			/* Verify the session for that user */
+			if (!userSession.isValid()) {
+				res.put("success", false);
+				res.put("error", userSession.getProblem());
+				return res;
+			}
+			
+			GroupHandler groupHandler = new GroupHandler(request.getLocalAddr());
+			groupHandler.removeGroup(groupID, userSession.getEmail());
+			res.put("success", true);
+		} catch (CustomException ce) {
+			res.put("success", false);
+			res.put("error", ce.getMessage());
 		} catch (Exception e) {
 			res.put("success", false);
 			res.put("error", "Unknown error at the Server: " + getStackTrace(e));
