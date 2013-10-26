@@ -4,6 +4,7 @@ package handlers;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.lightcouch.CouchDbClient;
 import org.lightcouch.DocumentConflictException;
@@ -157,6 +158,20 @@ public class DBHandler {
 	public Group getGroup(String groupID) {
 		Group group = dbClient.find(Group.class, groupID);
 		return group;
+	}
+	
+	public ArrayList<Group> getGroups(String userID) {
+		List<Group> list = dbClient.view("groups/by_user")
+			 	.key(userID).includeDocs(true).query(Group.class);
+		ArrayList<Group> res = new ArrayList<Group>(list);
+		return res;
+	}
+	
+	public ArrayList<Group> getGroupsByOwner(String userID) {
+		List<Group> list = dbClient.view("groups/by_owner")
+			 	.key(userID).includeDocs(true).query(Group.class);
+		ArrayList<Group> res = new ArrayList<Group>(list);
+		return res;
 	}
 
 	// TO-DO: CHECK FOR CONCURRENCY
