@@ -266,6 +266,7 @@ var chat = {
 										"<ul class=\"success push-1 span-8 last\"><li>"
 												+ "Your group has been created successfully."
 												+ "</li></ul>");
+						chat.getGroups();
 					} else {
 						$("#frm_create #error").html(
 								"<li>" + data.error + "</li>").show();
@@ -299,25 +300,27 @@ var chat = {
 	},
 	sendDeleteUserGroup: function(group, user){
 		login.verifySession();
-		alert("should delete the user " + user + " from group " + group);
-//		var settings = {
-//			form_id : "",
-//			btn_id : button,
-//			url : "GroupServlet",
-//			data : {
-//				"email" : login.email,
-//				"groupID" : groupID
-//			},
-//			success : function(data) {
-//				if (data.success) {
-//					chat.init();
-//				} else{
-//					$("#chat_body #error").html(
-//							"<li>" + data.error + "</li>").show();
-//				}
-//			}
-//		};
-//		utils.sendAjax(settings);
+		var settings = {
+			form_id : "",
+//			btn_id : "#" + group + "_" + user,
+			url : "GroupServlet",
+			data : {
+				"email" : login.email,
+				"token" : login.token,
+				"group_id" : group,
+				"exuser" : user,
+				"method" : "removeuser"
+			},
+			success : function(data) {
+				if (data.success) {
+					chat.initGroupsManager();
+				} else{
+					$("#chat_body #error").html(
+							"<li>" + data.error + "</li>").show();
+				}
+			}
+		};
+		utils.sendAjax(settings);
 	},
 	sendOpenGroup: function(group){
 		login.verifySession();
@@ -332,7 +335,6 @@ var chat = {
 		login.verifySession();
 		var settings = {
 			form_id : "",
-//				btn_id : "#btn_leave",
 			url : "GroupServlet",
 			data : {
 				"email" : login.email,
@@ -350,33 +352,30 @@ var chat = {
 						id : "chat_container",
 						'class': "push-4 span-16 ui-corner-all"
 					});
-					
+
 					var groups_html = chat.getGroupsHTML(groups_list);
 					
 					chat_container.append(groups_html);
 					
-					$("#content_login").fadeOut("slow", function() {
-						$("#content_login").remove();
-
-						$(".container").append(chat_container);
-						$("#btn_logout")
-							.bind("click", function() {login.sendLogout();})
-							.button({icons: {primary: "btn_logout"}});
-						$("#btn_reset")
-							.bind("click", function() {$(".success").remove(); login.sendReset();})
-							.button({icons: {primary: "btn_reset"}});
-						$("#btn_delete")
-							.bind("click", function() {$(".success").remove();login.sendDelete();})
-							.button({icons: {primary: "btn_delete"}});
-						
-						$("#btn_groups").button({icons: {primary: "btn_groups"}});
-						$("#btn_chat").button({icons: {primary: "btn_chat"}});
-						
-						chat.initGroupsManager();
-						
-						chat_container.fadeIn(300);
-
-					});
+					$("#content_login").remove();
+					
+					$(".container").html(chat_container);
+					$("#btn_logout")
+						.bind("click", function() {login.sendLogout();})
+						.button({icons: {primary: "btn_logout"}});
+					$("#btn_reset")
+						.bind("click", function() {$(".success").remove(); login.sendReset();})
+						.button({icons: {primary: "btn_reset"}});
+					$("#btn_delete")
+						.bind("click", function() {$(".success").remove();login.sendDelete();})
+						.button({icons: {primary: "btn_delete"}});
+					
+					$("#btn_groups").button({icons: {primary: "btn_groups"}});
+					$("#btn_chat").button({icons: {primary: "btn_chat"}});
+					
+					chat.initGroupsManager();
+					
+					chat_container.fadeIn(300);
 				} else{
 					$("#chat_body #error").html(
 							"<li>" + data.error + "</li>").show();
@@ -396,17 +395,17 @@ var chat = {
 					+ '<button id=\"' + g.id + '\" class="btn_delete_group"><a href=\"javascript:void(0)\">Delete</a></button>'
 				 + '</div>'
 					+ '<div>'
-						+ chat.getUsersList(g)
+						+ chat.getUsersList(g, admin)
 					+'</div>';
 		});
 		
 		return list;
 	},
-	getUsersList: function(g){
+	getUsersList: function(g, admin){
 		var list = "";
 		$.each(g.users, function(i,u){
 			list = '<div class="span-10">'
-					+ '<button id=\"' + g.id + '_' + u + '\" class="btn_delete_usergroup"><a href=\"javascript:void(0)\">Remove user</a></button>'
+				+ (!admin ? '<button id=\"' + g.id + '_' + u + '\" class="btn_delete_usergroup"><a href=\"javascript:void(0)\">Remove user</a></button>' : '')
 					+ u 
 					+ '</div>';
 		 });
