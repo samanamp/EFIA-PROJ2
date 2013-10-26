@@ -77,4 +77,30 @@ public class Group {
 	public void setMessages(ArrayList<Message> messages) {
 		this.messages = messages;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof Group))
+			return false;
+		Group other = (Group) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (owner == null) {
+			if (other.owner != null)
+				return false;
+		} else if (!owner.equals(other.owner))
+			return false;
+		return true;
+	}
+	
+	public String toString() {
+		return "Group(" + name + "," + owner + ")";
+	}
 }

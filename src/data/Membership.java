@@ -3,7 +3,7 @@ package data;
 
 public class Membership {
 
-	/* The user ID of the user belonging to a group(Same as email) */
+	/* The user ID of the user belonging to a group */
 	private String email;
 	/* The confirmation token when requesting membership, empty if granted */
 	private String token;
@@ -14,7 +14,6 @@ public class Membership {
 		this.email = email;
 		this.token = token;
 	}
-	
 	public String getEmail() {
 		return email;
 	}

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import data.Group;
 import data.Membership;
 import data.Message;
+import exceptions.CustomException;
 
 public class GroupHandler {
 	DBHandler dbHandler;
@@ -16,17 +17,18 @@ public class GroupHandler {
 		this.localServerAddress = localServerAddress;
 	}
 
-	// TODO Check for existing groupName for that owner.
 	/**
-	 * 
 	 * @param groupName
 	 * @param owner
-	 * @return 2 if everything is OK
-	 * @return 1 if group Exists
-	 * @return -2 if any errors happened
+	 * @throw CustomException In case the group name is repeated for that owner
 	 */
-	public void addNewGroup(String groupName, String owner) {
+	public void addNewGroup(String groupName, String owner) 
+			throws CustomException {
 		Group group = new Group(groupName, owner);
+		ArrayList<Group> groups = dbHandler.getGroupsByOwner(owner);
+		if (groups.contains(group)) {
+			throw new CustomException(CustomException.GROUP_NAME_UNAVAILABLE);
+		}
 		dbHandler.addNewGroup(group);
 	}
 
@@ -174,5 +176,6 @@ public class GroupHandler {
 		System.out.println(gh.addNewMessageToGroup("669caff1efad4a2bb2567a3682630758", new Message("cesarm@unimelb.edu.au", "hi everybody", 12346443)));
 		//System.out.println(gh.confirmNewUser("669caff1efad4a2bb2567a3682630758", "samani", "o4kstpm4ec3cvc75lnhsui9g0fpa9tgo"));
 		//System.out.println(gh.confirmNewUser("669caff1efad4a2bb2567a3682630758", "cesarm@unimelb.edu.au", "o4kstpm4ec3cvc75lnhsui9g0fpa9tgo"));
+
 	}
 }
