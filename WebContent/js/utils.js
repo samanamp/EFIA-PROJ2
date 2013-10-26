@@ -1,5 +1,5 @@
 var utils = {
-		setDialog: function(action, title, sendFunction){
+		setDialog: function(action, title, sendFunction, rules){
 			var form_id = "#frm_" + action;
 			var txt_id = "#txt_" + action;
 			var content_id = "#content_" + action;
@@ -10,10 +10,7 @@ var utils = {
 				errorLabelContainer : $(form_id + " ul#error")
 			});
 			
-			$(txt_id).rules('add', {
-				required : true,
-				email : true
-			});
+			$(txt_id).rules('add', rules);
 
 			$(content_id).dialog({
 				title: title,

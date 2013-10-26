@@ -54,12 +54,12 @@ var login = {
 
 			loggedOutContent = $("#content_login");
 			
-			utils.setDialog("register", "Register", function(){login.sendRegister();});
-			utils.setDialog("reminder", "Send reminder email", function(){login.sendReminder();});
+			utils.setDialog("register", "Register", function(){login.sendRegister();}, {required : true,email : true});
+			utils.setDialog("reminder", "Send reminder email", function(){login.sendReminder();},{required : true,email : true});
 		},
 		verifySession: function(){
-			if(login.email != null && login.admin != null && login.token != null)
-				return {email: login.email, admin: login.admin};
+			if(login.email != null && login.token != null)
+				return true;
 			
 			login.sendLogout();
 			
@@ -81,7 +81,6 @@ var login = {
 					if (data.success) {
 						login.token = data.token;
 						login.email = $("#txtEmail").val();
-						login.admin = data.admin;
 						login.generateLoggedInContent();
 					} else {
 						$("#frmLogin #error").html(
@@ -99,39 +98,40 @@ var login = {
 			if(!login.verifySession())return;
 			
 			$(".success").remove();
-			var new_div = $("<div />", {
-				id : "chat_container",
-				'class': "push-4 span-16 ui-corner-all"
-			});
+//			var new_div = $("<div />", {
+//				id : "chat_container",
+//				'class': "push-4 span-16 ui-corner-all"
+//			});
 
-			new_div.append(chat.getHTML)
-				   .hide();
+//			new_div.append(chat.getHTML)
+//				   .hide();
 			
 			
-			$("#content_login").fadeOut("slow", function() {
-				$("#content_login").remove();
-
-				$(".container").append(new_div);
-
-				$("#btn_logout").bind("click", function() {
-					login.sendLogout();
-				});
-
-				$("#btn_reset").bind("click", function() {
-					$(".success").remove();
-					login.sendReset();
-				});
-
-				$("#btn_delete").bind("click", function() {
-					$(".success").remove();
-					login.sendDelete();
-				});
+//			$("#content_login").fadeOut("slow", function() {
+//				$("#content_login").remove();
+//
+//				$(".container").append(new_div);
+//
+//				$("#btn_logout").bind("click", function() {
+//					login.sendLogout();
+//				});
+//
+//				$("#btn_reset").bind("click", function() {
+//					$(".success").remove();
+//					login.sendReset();
+//				});
+//
+//				$("#btn_delete").bind("click", function() {
+//					$(".success").remove();
+//					login.sendDelete();
+//				});
 				
 				chat.init();
 				
-				new_div.fadeIn(300);
+				
+//				new_div.fadeIn(300);
 
-			});
+//			});
 		},
 		sendRegister: function() {
 			/*******************************************************************************
@@ -308,7 +308,6 @@ var login = {
 
 $(document).ready(function() {
 	login.init();
-	login.generateLoggedInContent();
 });
 
 /* For reading get variables from javascript */
