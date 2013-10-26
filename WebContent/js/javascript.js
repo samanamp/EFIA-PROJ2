@@ -98,40 +98,7 @@ var login = {
 			if(!login.verifySession())return;
 			
 			$(".success").remove();
-//			var new_div = $("<div />", {
-//				id : "chat_container",
-//				'class': "push-4 span-16 ui-corner-all"
-//			});
-
-//			new_div.append(chat.getHTML)
-//				   .hide();
-			
-			
-//			$("#content_login").fadeOut("slow", function() {
-//				$("#content_login").remove();
-//
-//				$(".container").append(new_div);
-//
-//				$("#btn_logout").bind("click", function() {
-//					login.sendLogout();
-//				});
-//
-//				$("#btn_reset").bind("click", function() {
-//					$(".success").remove();
-//					login.sendReset();
-//				});
-//
-//				$("#btn_delete").bind("click", function() {
-//					$(".success").remove();
-//					login.sendDelete();
-//				});
-				
-				chat.init();
-				
-				
-//				new_div.fadeIn(300);
-
-//			});
+			chat.init();
 		},
 		sendRegister: function() {
 			/*******************************************************************************
