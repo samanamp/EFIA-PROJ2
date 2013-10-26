@@ -112,6 +112,7 @@ public class GroupHandler {
 					members.add(member);
 					group.setUsers(members);
 					dbHandler.updateGroup(group);
+					return 0;
 				}else
 					throw new CustomException("Group", "Either confirmed before or the token is wrong");
 			}
