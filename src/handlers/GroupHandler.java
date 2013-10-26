@@ -47,7 +47,7 @@ public class GroupHandler {
 	 * @param newUserEmail
 	 * 
 	 */
-	public void addNewUserToGroup(String groupID, String newMemberEmail) throws CustomException {
+	public void addNewUserToGroup(String groupID, String newMemberEmail, String ownerEmail) throws CustomException {
 		try {
 			Membership newMember = new Membership(newMemberEmail,
 					SecureGen.generateSecureString(32));
@@ -57,6 +57,8 @@ public class GroupHandler {
 				throw new CustomException("Group", "There is no such user");
 
 			Group group = dbHandler.getGroup(groupID);
+			if(!group.getOwner().equalsIgnoreCase(ownerEmail))
+				throw new CustomException("Group","Unauthorized, you should be admin");
 			ArrayList<Membership> members = group.getUsers();
 
 			boolean userIsAMember = false;
