@@ -1,5 +1,7 @@
 package handlers;
 
+import org.lightcouch.NoDocumentException;
+
 import data.UserData;
 
 public class UserSession {
@@ -51,18 +53,32 @@ public class UserSession {
 	 * @param token
 	 */
 	public void verifySession(DBHandler dbh, String email, String token) {
-		UserData user = dbh.getUser(email);
+		if (!UserData.isValidEmail(email)) {
+			problem = "The e-mail provided is not valid.";
+			return;
+		}
+		UserData user;
+		try {
+			user = dbh.getUser(email);
+		} catch (NoDocumentException nde) {
+			problem = "There is no user registered for the e-mail provided.";
+			return;
+		}
+		
 		if (token != null) {
 			//Validate the user session
 			if (user != null && user.getToken() != null) {
 				if (!user.getToken().equals(token) || !user.isConfirmed()) {
 					problem = "Invalid token";
+					return;
 				}
 			} else {
 				problem = "No session found";
+				return;
 			}
 		} else {
 			problem = "No access token provided";
+			return;
 		}
 		
 		valid = true;

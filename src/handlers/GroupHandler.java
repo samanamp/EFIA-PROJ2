@@ -31,6 +31,14 @@ public class GroupHandler {
 		}
 		dbHandler.addNewGroup(group);
 	}
+	
+	/**
+	 * 
+	 * @param email
+	 */
+	public ArrayList<Group> getGroups(String email) {
+		return dbHandler.getGroups(email);
+	}
 
 	// TODO Implement the invitation token logic
 	/**
@@ -82,7 +90,7 @@ public class GroupHandler {
 		String confirmMessage = "Please confirm your membership in \""
 				+ group.getName() + "\" group owned by \"" + group.getOwner()
 				+ "\"  by clicking on following link: \n" + "<a href=\"http://"
-				+ localServerAddress + ":8080/proj2/Confirm?groupid="
+				+ localServerAddress + ":8080/proj2/GroupServlet?method=confirm&groupid="
 				+ group.get_id() + "&token=" + member.getToken() + "&email="
 				+ member.getEmail() + "\">Click me!</a>";
 		System.out.println(confirmMessage);
