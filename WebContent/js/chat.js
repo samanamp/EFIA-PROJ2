@@ -23,11 +23,11 @@ var chat = {
 		
 		utils.setDialog("create", "Create a new group", function(){chat.sendCreate();},{required : true, alphanumeric : true});
 		$("#lnk_create").button({icons: {primary: "ui-icon-circle-plus"},text:false});
-//		$("#groups_accordion").accordion({
-//		      collapsible: true,
-//		      icons: null,//TODO fix the icons
-//		      header: "div.group"
-//	    });
+		$("#groups_accordion").accordion({
+		      collapsible: true,
+		      icons: null,//TODO fix the icons
+		      header: "div.group"
+	    });
 		
 		$.each($(".btn_delete_group"), function(){
 			$(this).button({icons: {primary: "ui-icon-circle-close"},text:false})
@@ -69,6 +69,7 @@ var chat = {
 		
 		refreshMessages = setInterval(function(){chat.sendAJAX("", group_id);}, 1000);
 		
+		alert($("#content_chat #content_invite").length);
 		utils.setDialog("invite", "Invite a friend", function(){chat.sendInvitation();});
 		
 		if(!login.admin){
@@ -322,7 +323,7 @@ var chat = {
 		$(".outer_container").fadeOut(300, function(){
 			$(".outer_container").remove();
 			
-//			$("#content_chat").append(chat.getChatHTML()+chat.getInviteHTML());alert($("#content_chat").html());
+			$("#content_chat").html(chat.getChatHTML()+chat.getInviteHTML());alert($("#content_chat").html());
 			chat.initChatRoom(group);
 		});
 	},

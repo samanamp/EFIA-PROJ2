@@ -308,5 +308,18 @@ var login = {
 
 $(document).ready(function() {
 	login.init();
-//	login.generateLoggedInContent();
 });
+
+/* For reading get variables from javascript */
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+/* To display a message in the confirmation page */
+function confirmDisplayMessage() {
+	var message = getParameterByName("message");
+	$('#txtConfirmation').html(message);
+}
