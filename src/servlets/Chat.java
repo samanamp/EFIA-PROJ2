@@ -1,4 +1,5 @@
 
+package servlets;
 
 import handlers.DBHandler;
 
@@ -34,8 +35,6 @@ public class Chat extends HttpServlet {
     public Chat() {
         super();
         dbh = new DBHandler();
-        //initialize the list of messages
-        msgList = dbh.getAll();
     }
 
 	/**
@@ -71,9 +70,9 @@ public class Chat extends HttpServlet {
 					String _id = Integer.toString(msgList.size());
 					try {
 						//insert in DB
-						dbh.putMessage(new Message( _id, user, message, millis));
+						//dbh.putMessage(new Message(user, message, millis));
 						//add message to the list
-						msgList.add(new Message(_id, user, message, millis));
+						msgList.add(new Message(user, message, millis));
 					} catch(Exception e) {
 						//in case of an error inserting, it will enter here
 						res.put("success", false);

@@ -18,14 +18,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import data.Group;
 import data.Message;
 import data.UserData;
 import exceptions.CustomException;
 
 /**
- * Servlet implementation class Chat
+ * Servlet implementation class GroupServlet
  */
 @WebServlet("/GroupServlet")
 public class GroupServlet extends HttpServlet {
@@ -47,7 +49,7 @@ public class GroupServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
 		
-		JSONObject res = null;
+		JSONObject res = new JSONObject();
 		
 		// create a JSON object (using json-simple)
 		String method = request.getParameter("method");
@@ -68,6 +70,8 @@ public class GroupServlet extends HttpServlet {
 				res.put("error", "A group name must be defined.");
 			}
 			res = executeAddGroup(request, userSession, groupName);
+		} else if (method.equals("listgroups")) {
+			res = executeListGroups(request, userSession);
 		} else {
 			res.put("success", false);
 			res.put("error", "Could not recognize method: ." + method);
@@ -79,7 +83,7 @@ public class GroupServlet extends HttpServlet {
 		out.print(res);
 		out.close();
 	}
-	
+
 	public synchronized JSONObject executeAddGroup(HttpServletRequest request, 
 			UserSession userSession, String groupName) {
 		
@@ -98,7 +102,41 @@ public class GroupServlet extends HttpServlet {
 			
 		} catch (CustomException ce) {
 			res.put("success", false);
-			res.put("error", "Wrong format for the message head.");
+			res.put("error", "The group defined already exists for " + userSession.getEmail());
+		} catch (Exception e) {
+			res.put("success", false);
+			res.put("error", "Unknown error at the Server: " + getStackTrace(e));
+		}
+		
+		return res;
+	}
+	
+	public synchronized JSONObject executeListGroups(HttpServletRequest request, 
+			UserSession userSession) {
+		
+		JSONObject res = new JSONObject();
+		
+		try {
+			/* Verify the session for that user */
+			if (!userSession.isValid()) {
+				res.put("success", false);
+				res.put("error", userSession.getProblem());
+				return res;
+			}
+			
+			GroupHandler groupHandler = new GroupHandler(request.getLocalAddr());
+			ArrayList<Group> groups = groupHandler.getGroups(userSession.getEmail());
+			
+			JSONArray jgroups = new JSONArray();
+			for (Group group : groups) {
+				JSONObject jgroup = new JSONObject();
+				jgroup.put("name", group.getName());
+				jgroup.put("id", group.get_id());
+				jgroups.add(jgroup);
+			}			
+			res.put("success", true);
+			res.put("groups", jgroups);
+			
 		} catch (Exception e) {
 			res.put("success", false);
 			res.put("error", "Unknown error at the Server: " + getStackTrace(e));
