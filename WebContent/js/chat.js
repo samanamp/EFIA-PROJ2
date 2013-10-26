@@ -43,6 +43,7 @@ var chat = {
 		$.each($(".btn_open_group"), function(){
 			$(this).button({icons: {primary: "ui-icon-comment"},text:false})
 				.bind("click", function(){
+					
 					var params = $(this).attr("id").split("_");
 					login.admin = params[3];
 					chat.sendOpenGroup(params[2]);
@@ -66,7 +67,7 @@ var chat = {
 		
 		refreshMessages = setInterval(function(){chat.sendAJAX("", group_id);}, 1000);
 		
-		utils.setDialog("invite", "Invite a friend", function(){chat.sendInvitation(group_id);}, {required : true,email : true});
+//		utils.setDialog("invite", "Invite a friend", function(){chat.sendInvitation(group_id);}, {required : true,email : true});
 		
 		if(!login.admin){
 			$("#btn_leave").bind('click', function(){
@@ -328,6 +329,7 @@ var chat = {
 			
 			$("#content_chat").html(chat.getChatHTML()+chat.getInviteHTML());
 			chat.initChatRoom(group);
+			utils.setDialog("invite", "Invite a friend", function(){chat.sendInvitation(group);}, {required : true,email : true});
 		});
 	},
 	getGroups: function(){
@@ -409,8 +411,9 @@ var chat = {
 		var admin = false;
 		$.each(g.users, function(i,u){
 			admin = (g.owner == u);
+//			owner = (g.owner == login.email);
 			list += '<div class="span-10">'
-				+ (!admin ? '<button id=\"' + g.id + '_' + u + '\" class="btn_delete_usergroup"><a href=\"javascript:void(0)\">Remove user</a></button>' : '')
+				+ (!admin  ? '<button id=\"' + g.id + '_' + u + '\" class="btn_delete_usergroup"><a href=\"javascript:void(0)\">Remove user</a></button>' : '')
 					+ u 
 					+ '</div>';
 		 });
