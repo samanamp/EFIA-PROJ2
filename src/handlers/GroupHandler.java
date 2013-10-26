@@ -168,11 +168,31 @@ public class GroupHandler {
 			throw new CustomException("User","Un-Authorized access");
 	}
 
+	public void removeTheUser(String groupID, String user) throws CustomException{
+		Group group = dbHandler.getGroup(groupID);
+		if(!userIsMember(user, group))		
+			throw new CustomException("User","Un-Authorized access");
+		
+		ArrayList<Membership> members = group.getUsers();
+
+		boolean userIsAMember = false;
+		for (Membership member : members) {
+			if (member.getEmail().equalsIgnoreCase(user)){
+				members.remove(member);
+				group.setUsers(members);
+				dbHandler.updateGroup(group);
+			}
+		}		
+	}
 	/**
 	 * 
 	 * @param groupID
+	 * @throws CustomException 
 	 */
-	public void removeGroup(String groupID) {
+	public void removeGroup(String groupID, String userEmail) throws CustomException {
+		Group group = dbHandler.getGroup(groupID);
+		if(!group.getOwner().equalsIgnoreCase(userEmail))
+			throw new CustomException("user","Unauthorized Action, you should be admin");
 		dbHandler.deleteGroup(groupID);
 	}
 
