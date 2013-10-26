@@ -1,12 +1,7 @@
-//var token = null;
-//var email = null;
-//var admin = null;
-var token = "aa";
-var admin = true;
-var email = "thisistheemail@email.com";
-var loggedOutContent;
-
 var login = {
+		token: "aa",//null
+		admin: false,//null
+		email: "thisistheemail@email.com",//null
 		init: function(){
 			$.validator.setDefaults({
 				submitHandler : function() {
@@ -48,7 +43,7 @@ var login = {
 					return false;
 			});
 
-			$("#btnLogin").button({
+			$("#btn_login").button({
 				text : "Login"
 			}).bind("click", function(event){
 				if ($("#frmLogin").valid()) {
@@ -62,11 +57,13 @@ var login = {
 			utils.setDialog("register", "Register", function(){login.sendRegister();});
 			utils.setDialog("reminder", "Send reminder email", function(){login.sendReminder();});
 		},
-		getUserInfo: function(){
-			if(email != null && admin != null && token != null)
-				return {email: email, admin: admin};
+		verifySession: function(){
+			if(login.email != null && login.admin != null && login.token != null)
+				return {email: login.email, admin: login.admin};
 			
 			login.sendLogout();
+			
+			return false;
 		},
 		sendLogin: function() {
 			/*******************************************************************************
@@ -74,6 +71,7 @@ var login = {
 			 ******************************************************************************/
 			var settings = {
 				form_id : "#frmLogin",
+				btn_id : "#btn_login",
 				url : "Login",
 				data : {
 					"email" : $("#txtEmail").val(),
@@ -81,9 +79,9 @@ var login = {
 				},
 				success : function(data) {
 					if (data.success) {
-						token = data.token;
-						email = $("#txtEmail").val();
-						admin = data.admin;
+						login.token = data.token;
+						login.email = $("#txtEmail").val();
+						login.admin = data.admin;
 						login.generateLoggedInContent();
 					} else {
 						$("#frmLogin #error").html(
@@ -98,14 +96,18 @@ var login = {
 			/*******************************************************************************
 			 * Generates the content that will appear when the user is logged in
 			 ******************************************************************************/
+			if(!login.verifySession())return;
+			
 			$(".success").remove();
 			var new_div = $("<div />", {
 				id : "chat_container",
 				'class': "push-4 span-16 ui-corner-all"
 			});
+
 			new_div.append(chat.getHTML)
 				   .hide();
-
+			
+			
 			$("#content_login").fadeOut("slow", function() {
 				$("#content_login").remove();
 
@@ -124,7 +126,9 @@ var login = {
 					$(".success").remove();
 					login.sendDelete();
 				});
+				
 				chat.init();
+				
 				new_div.fadeIn(300);
 
 			});
@@ -136,6 +140,7 @@ var login = {
 			 ******************************************************************************/
 			var settings = {
 				form_id : "#frm_register",
+				btn_id : "#btn_register",
 				url : "Register",
 				data : {
 					"email" : $("#txt_register").val()
@@ -165,6 +170,7 @@ var login = {
 			 ******************************************************************************/
 			var settings = {
 				form_id : "#frm_reminder",
+				btn_id : "#btn_reminder",
 				url : "Reminder",
 				data : {
 					"email" : $("#txt_reminder").val()
@@ -191,18 +197,19 @@ var login = {
 			 * Function to send a request to the Logout Servlet it uses the sendAjax
 			 * function
 			 ******************************************************************************/
-			if (email != null && token != null) {
+			if (login.email != null && login.token != null && login.admin != null) {
 				var settings = {
 					form_id : "#frmLogin",
+					btn_id : "#btn_logout",
 					url : "Logout",
 					data : {
-						"email" : email,
-						"token" : token
+						"email" : login.email,
+						"token" : login.token
 					},
 					success : function(data) {
-						token = null;
-						email = null;
-						admin = null;
+						login.token = null;
+						login.email = null;
+						login.admin = null;
 						var error = null;
 						if (!data.success) {
 							error = data.error;
@@ -247,59 +254,55 @@ var login = {
 			/*******************************************************************************
 			 * Function to send a request to the Reset Servlet it uses the sendAjax function
 			 ******************************************************************************/
-			if (email != null && token != null) {
-				var settings = {
-					form_id : "#frmLogin",
-					url : "Reset",
-					data : {
-						"email" : email,
-						"token" : token
-					},
-					success : function(data) {
-						if (data.success) {
-							$("#chat_container")
-									.before(
-											"<ul class=\"success\"><li>"
-													+ "Your new password has been sent to your address please check your inbox and try to login."
-													+ "</li></ul>");
-						} else {
-							login.generateLoggedOutContent(data.error, "error");
-						}
+			if(!login.verifySession())return;
+			var settings = {
+				form_id : "#frmLogin",
+				btn_id : "#btn_reset",
+				url : "Reset",
+				data : {
+					"email" : login.email,
+					"token" : login.token
+				},
+				success : function(data) {
+					if (data.success) {
+						$("#chat_container")
+								.before(
+										"<ul class=\"success\"><li>"
+												+ "Your new password has been sent to your address please check your inbox and try to login."
+												+ "</li></ul>");
+					} else {
+						login.generateLoggedOutContent(data.error, "error");
 					}
-				};
-				utils.sendAjax(settings);
-			} else {
-				login.generateLoggedOutContent("Invalid token.", "error");
-			}
+				}
+			};
+			utils.sendAjax(settings);
 		},
 		sendDelete: function () {
 			/*******************************************************************************
 			 * Function to send a request to the Delete Servlet it uses the sendAjax
 			 * function
 			 ******************************************************************************/
-			if (email != null && token != null) {
-				var settings = {
-					form_id : "#frmLogin",
-					url : "Delete",
-					data : {
-						"email" : email,
-						"token" : token
-					},
-					success : function(data) {
-						if (data.success) {
-							login.generateLoggedOutContent(
-									"We are sorry that you have decided to leave us. "
-											+ "We hope you come back soon :)",
-									"success");
-						} else {
-							login.generateLoggedOutContent(data.error, "error");
-						}
+			if(!login.verifySession())return;
+			var settings = {
+				form_id : "#frmLogin",
+				btn_id : "#btn_delete",
+				url : "Delete",
+				data : {
+					"email" : login.email,
+					"token" : login.token
+				},
+				success : function(data) {
+					if (data.success) {
+						login.generateLoggedOutContent(
+								"We are sorry that you have decided to leave us. "
+										+ "We hope you come back soon :)",
+								"success");
+					} else {
+						login.generateLoggedOutContent(data.error, "error");
 					}
-				};
-				utils.sendAjax(settings);
-			} else {
-				login.generateLoggedOutContent("Invalid token.", "error");
-			}
+				}
+			};
+			utils.sendAjax(settings);
 		}
 };
 
