@@ -329,6 +329,7 @@ var chat = {
 			
 			$("#content_chat").html(chat.getChatHTML()+chat.getInviteHTML());
 			chat.initChatRoom(group);
+			
 			utils.setDialog("invite", "Invite a friend", function(){chat.sendInvitation(group);}, {required : true,email : true});
 		});
 	},

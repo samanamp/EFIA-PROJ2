@@ -12,6 +12,8 @@ var utils = {
 			
 			$(txt_id).rules('add', rules);
 
+			
+			
 			$(content_id).dialog({
 				title: title,
 				buttons: [{
@@ -41,9 +43,10 @@ var utils = {
 					frmValidator.resetForm();
 					$(this).find("input").removeClass("error").val("");
 					utils.resetForm($(this));
+					$(content_id).dialog('destroy');
 				}
 			});
-
+			
 			$(link_id).bind("click", function() {
 				$(content_id).dialog("open");
 			});
