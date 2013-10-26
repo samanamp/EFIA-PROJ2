@@ -6,6 +6,7 @@ public class CustomException extends Exception {
 	private String type;
 	
 	public static final String GROUP_NAME_UNAVAILABLE = "GroupNameUnavailable";
+	public static final String INTERNAL_ERROR = "Internal Error";
 	
 	public CustomException(String type) {
 		super();

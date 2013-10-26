@@ -46,20 +46,15 @@ public class GroupHandler {
 	 * @param groupID
 	 * @param newUserEmail
 	 * 
-	 * @return 2 if everything is ok returns
-	 * @return 1 if user registered and confirmed before
-	 * @return 0 if there is no such user
-	 * @return -1 if groupID is wrong
-	 * @return -2 if any other errors happened
 	 */
-	public int addNewUserToGroup(String groupID, String newMemberEmail) {
+	public void addNewUserToGroup(String groupID, String newMemberEmail) throws CustomException {
 		try {
 			Membership newMember = new Membership(newMemberEmail,
 					SecureGen.generateSecureString(32));
 			if (!dbHandler.ifGroupExists(groupID))
-				return -1;
+				throw new CustomException("Group", "The group ID is wrong");
 			if(!dbHandler.ifUserExists(newMemberEmail))
-				return 0;
+				throw new CustomException("Group", "There is no such user");
 
 			Group group = dbHandler.getGroup(groupID);
 			ArrayList<Membership> members = group.getUsers();
@@ -70,7 +65,7 @@ public class GroupHandler {
 					userIsAMember = true;
 					newMember = member;
 					if (member.getToken() == "")
-						return 1;
+						throw new CustomException("Group", "The member has already confirmed");
 				}
 			}
 			if (!userIsAMember)
@@ -79,9 +74,8 @@ public class GroupHandler {
 			dbHandler.updateGroup(group);
 
 			sendGroupMembershipConfirmationLink(group, newMember);
-			return 2;
 		} catch (Exception e) {
-			return -2;
+			throw new CustomException(CustomException.INTERNAL_ERROR);
 		}
 	}
 
@@ -100,14 +94,11 @@ public class GroupHandler {
 	}
 
 	/**
-	 * @retrun 2 if everything is ok
-	 * @return 1 if confirmed before or token is wrong
-	 * @return 0 if user is not registered to the group
-	 * @return -1 if groupID is wrong
+	 * @throws CustomException 
 	 */
-	public int confirmNewUser(String groupID, String userEmail, String token) {
+	public int confirmNewUser(String groupID, String userEmail, String token) throws CustomException {
 		if (!dbHandler.ifGroupExists(groupID))
-			return -1;
+			throw new CustomException("Group", "The group ID is wrong");
 		Group group = dbHandler.getGroup(groupID);
 		ArrayList<Membership> members = group.getUsers();
 
@@ -119,23 +110,20 @@ public class GroupHandler {
 					members.add(member);
 					group.setUsers(members);
 					dbHandler.updateGroup(group);
-					return 2;
 				}else
-					return 1;
+					throw new CustomException("Group", "Either confirmed before or the token is wrong");
 			}
 		}
-		return 0;
+		throw new CustomException("Group", "The user hasn't been invited to the group");
 	}
 
 	/**
 	 * 
 	 * @param groupID
 	 * @param newMessage
-	 * 
-	 * @return 2 if all things are OK
-	 * @return 0 if the user doesn't have the permission to post
+	 * @throws CustomException 
 	 */
-	public int addNewMessageToGroup(String groupID, Message newMessage) {
+	public void addNewMessageToGroup(String groupID, Message newMessage) throws CustomException {
 		Group group = dbHandler.getGroup(groupID);
 		boolean ifUserIsAMember = false;
 		ArrayList <Membership> members = group.getUsers();
@@ -145,11 +133,10 @@ public class GroupHandler {
 		}
 		
 		if(!ifUserIsAMember)
-			return 0;
+			throw new CustomException("Group", "The user doesn't have permission to post");
 		
 		group.getMessages().add(newMessage);
 		dbHandler.updateGroup(group);
-		return 2;
 	}
 
 	/**
@@ -179,9 +166,9 @@ public class GroupHandler {
 	}
 
 	public static void main(String[] args) {
-		GroupHandler gh = new GroupHandler("127.0.0.1");
+		//GroupHandler gh = new GroupHandler("127.0.0.1");
 		//gh.addNewGroup("Samax", "saman.bonab@gmail.com");
-		System.out.println(gh.addNewMessageToGroup("669caff1efad4a2bb2567a3682630758", new Message("cesarm@unimelb.edu.au", "hi everybody", 12346443)));
+		//System.out.println(gh.addNewMessageToGroup("669caff1efad4a2bb2567a3682630758", new Message("cesarm@unimelb.edu.au", "hi everybody", 12346443)));
 		//System.out.println(gh.confirmNewUser("669caff1efad4a2bb2567a3682630758", "samani", "o4kstpm4ec3cvc75lnhsui9g0fpa9tgo"));
 		//System.out.println(gh.confirmNewUser("669caff1efad4a2bb2567a3682630758", "cesarm@unimelb.edu.au", "o4kstpm4ec3cvc75lnhsui9g0fpa9tgo"));
 
