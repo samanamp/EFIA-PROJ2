@@ -23,7 +23,7 @@ public class GroupHandler {
 	public void addNewGroup(String groupName, String owner) 
 			throws CustomException {
 		Group group = new Group(groupName, owner);
-		ArrayList<Group> groups = dbHandler.getGroups(owner);
+		ArrayList<Group> groups = dbHandler.getGroupsByOwner(owner);
 		if (groups.contains(group)) {
 			throw new CustomException(CustomException.GROUP_NAME_UNAVAILABLE);
 		}
@@ -79,13 +79,14 @@ public class GroupHandler {
 		dbHandler.deleteGroup(groupID);
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		GroupHandler gh = new GroupHandler();
 		//gh.addNewGroup("group2", "cesarm@student.unimelb.edu.au");
 		//gh.addNewUserToGroup("70c08dba008d40fca436dc3738dfe112", "samana@unimelb.edu.au");
 		//gh.addNewMessageToGroup("70c08dba008d40fca436dc3738dfe112", new Message("samana@student.unimelb.edu.au", "Hola cesar!", 1382706613626l));
+		//gh.addNewGroup("group3", "edwinsp@student.unimelb.edu.au");
 		DBHandler dbh = gh.dbHandler;
-		System.out.println(dbh.getGroups("samana@student.unimelb.edu.au"));
+		//System.out.println(dbh.getGroups("samana@student.unimelb.edu.au"));
 	}
 
 }
