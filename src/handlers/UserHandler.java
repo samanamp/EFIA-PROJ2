@@ -3,6 +3,7 @@ package handlers;
 import java.io.IOException;
 
 import data.UserData;
+import exceptions.CustomException;
 
 public class UserHandler {
 
@@ -13,11 +14,7 @@ public class UserHandler {
 		dbHandler = new DBHandler();
 	}
 
-	/*
-	 * returns 2 if everything is ok returns 1 if user registered before returns
-	 * -2 for every other error ignores if the user registered before
-	 */
-	public int registerUser(String email) {
+	public boolean registerUser(String email) throws CustomException {
 		try {
 			if (!dbHandler.ifUserExists(email)) {
 				UserData user = new UserData();
@@ -26,42 +23,38 @@ public class UserHandler {
 				String token = SecureGen.generateSecureString(32);
 				user.setToken(token);
 				dbHandler.addNewUser(user);
-				return 2;
+				
 			}
 		} catch (Exception e) {
-			return -2;
+			throw new CustomException(CustomException.INTERNAL_ERROR, "Internal Error");
 		}
-		return 1;
+		return true;
 	}
 
-	/*
-	 * returns 2 if everything is ok returns 1 if user confirmed it before
-	 * returns 0 if user has requested it less than 5 minuts back returns -1 if
-	 * userDoesn't exist returns -2 with anyother error
-	 */
-	public int sendConfirmation(String email) {
+
+	public boolean sendConfirmation(String email) throws CustomException {
 		try {
 			if (!dbHandler.ifUserExists(email))
-				return -1;
+				throw new CustomException("User", "The user doesn't exist");
 
 			UserData user = dbHandler.getUser(email);
 
 			if (user.isConfirmed())
-				return 1;
+				throw new CustomException("User", "The user has confirmed before");
 
 			long remain = System.currentTimeMillis()
 					- user.getConfirmationTimestamp();
 			remain = remain / 1000; // Converting to seconds
 
 			if (remain < (5 * 60))
-				return 0;
+				throw new CustomException("User", "The user has requested it less than 5 minutes back");
 
 			sendConfirmationEmail(user);
 			user.setConfirmationTimestamp(System.currentTimeMillis());
 			dbHandler.updateUser(user);
-			return 2;
+			return true;
 		} catch (Exception e) {
-			return -2;
+			throw new CustomException(CustomException.INTERNAL_ERROR);
 		}
 
 	}
@@ -79,30 +72,26 @@ public class UserHandler {
 		emailHandler.start();
 	}
 
-	/*
-	 * returns 2 if successfull returns 1 if confirmed before return 0 if email
-	 * and token doesn't match returns -1 if user doesn't exist returns -2 any
-	 * other error
-	 */
-	public int confirm(String email, String token) {
+
+	public boolean confirm(String email, String token) throws CustomException {
 		try {
 			if (!dbHandler.ifUserExists(email))
-				return -1;
+				throw new CustomException("User", "The user doesn't exist");
 
 			UserData userData = dbHandler.getUser(email);
 
 			if (userData.isConfirmed())
-				return 1;
+				throw new CustomException("User", "The user has confirmed before");
 
 			if (!userData.getToken().equalsIgnoreCase(token))
-				return 0;
+				throw new CustomException("User", "The email and token doesn't match");
 
 			userData.setConfirmed(true);
 			SendPassword.sendNewPasswordForUser(userData);
 			dbHandler.updateUser(userData);
-			return 2;
+			return true;
 		} catch (Exception e) {
-			return -2;
+			throw new CustomException(CustomException.INTERNAL_ERROR);
 		}
 	}
 
