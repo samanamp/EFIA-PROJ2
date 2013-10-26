@@ -2,6 +2,8 @@
 package servlets;
 
 import handlers.DBHandler;
+import handlers.GroupHandler;
+import handlers.UserSession;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -16,9 +18,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.lightcouch.NoDocumentException;
 
+import data.Group;
+import data.Membership;
 import data.Message;
+import exceptions.CustomException;
 
 /**
  * Servlet implementation class Chat
@@ -26,7 +33,6 @@ import data.Message;
 @WebServlet("/Chat")
 public class Chat extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private ArrayList<Message> msgList = new ArrayList<Message>();
 	private DBHandler dbh;
        
     /**
@@ -59,47 +65,75 @@ public class Chat extends HttpServlet {
 		try {
 			// get the request parameters
 			String user = request.getParameter("user");
+			String token = request.getParameter("token");
 			String message = request.getParameter("message");
-			int msgHead = Integer.parseInt(request.getParameter("msghead"));
+			String groupID = request.getParameter("group_id");
+			long msgHead = Integer.parseInt(request.getParameter("msghead"));
+			
+			//Verify session
+			UserSession userSession = new UserSession(user);
+			userSession.verifySession(dbh, user, token);
+			if (!userSession.isValid()) {
+				res.put("success", false);
+				res.put("error", userSession.getProblem());
+				return res;
+			}
+			
+			//Verify that the group exists
+			GroupHandler groupHandler = new GroupHandler(request.getLocalAddr());
+			try {
+				if (groupID == null || groupID.equals("")) {
+					res.put("success", false);
+					res.put("error", "A group id must be defined.");
+					return res;
+				}
+				Group group = groupHandler.getGroup(groupID);
+				/* Check if the user is a member */
+				if (!groupHandler.userIsMember(user, group)) {
+					res.put("success", false);
+					res.put("error", "The user " + user + " does not belong to this group");
+					return res;
+				}
+			} catch (NoDocumentException nde) {
+				res.put("success", false);
+				res.put("error", "The group selected does not exist.");
+				return res;
+			}
 	
-			//Write message to the DB and append it to the list
+			//Write message to the DB
 			if (message != null) {
 				if (!message.equals("")) {
 					long millis = Calendar.getInstance().getTimeInMillis();
 					
-					String _id = Integer.toString(msgList.size());
 					try {
-						//insert in DB
-						//dbh.putMessage(new Message(user, message, millis));
-						//add message to the list
-						msgList.add(new Message(user, message, millis));
+						//insert in DB		
+						groupHandler.addNewMessageToGroup(groupID, new Message(user, message, millis));
+					} catch (CustomException ce) {
+						res.put("success", false);
+						res.put("error", ce.getMessage());
+						return res;
 					} catch(Exception e) {
-						//in case of an error inserting, it will enter here
 						res.put("success", false);
 						res.put("error", "Internal error: " + getStackTrace(e));
+						return res;
 					}
 				}
 			}
 			
-			//Obtain messages from the list if needed
-			if (msgHead < msgList.size()) {
-				JSONObject listJson = new JSONObject();
-				
-				for (int i = msgHead; i < msgList.size(); i++) {
-					JSONObject msgjson = new JSONObject();
-					
-					Message msg = msgList.get(i);
-					msgjson.put("user", msg.getUser());
-					msgjson.put("message", msg.getMessage());
-					msgjson.put("timestamp", msg.getTimestamp());
-					
-					listJson.put(i, msgjson);	
-				}
-				res.put("messages", listJson);
-			} else {
-				res.put("messages", "");
-			}
+			//Obtain messages 
+			ArrayList<Message> messages = groupHandler.getMessagesOfGroup(groupID);
+			JSONArray jmessages = new JSONArray();
+			for (Message msg : messages) {
+				if (msg.getTimestamp() <= msgHead)
+					continue;
+				JSONObject jmessage = new JSONObject();
+				jmessage.put("user", msg.getUser());
+				jmessage.put("message", msg.getMessage());
+				jmessage.put("timestamp", msg.getTimestamp());
+				jmessages.add(jmessage);
+			}			
 			res.put("success", true);
+			res.put("messages", jmessages);
 		} catch (NumberFormatException nfe) {
 			res.put("success", false);
 			res.put("error", "Wrong format for the message head.");

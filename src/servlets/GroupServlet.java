@@ -64,13 +64,14 @@ public class GroupServlet extends HttpServlet {
 			if (groupName == null || groupName.equals("")) {
 				res.put("success", false);
 				res.put("error", "A group name must be defined.");
+			} else {
+				res = executeAddGroup(request, userSession, groupName);
 			}
-			res = executeAddGroup(request, userSession, groupName);
 		} else if (method.equals("listgroups")) {
 			res = executeListGroups(request, userSession);
 		} else {
 			res.put("success", false);
-			res.put("error", "Could not recognize method: ." + method);
+			res.put("error", "Could not recognize method: " + method);
 		}
 		
 		// respond to the web browser
@@ -95,7 +96,7 @@ public class GroupServlet extends HttpServlet {
 			
 			GroupHandler groupHandler = new GroupHandler(request.getLocalAddr());
 			groupHandler.addNewGroup(groupName, userSession.getEmail());
-			
+			res.put("success", true);
 		} catch (CustomException ce) {
 			res.put("success", false);
 			res.put("error", "The group defined already exists for " + userSession.getEmail());
@@ -127,6 +128,7 @@ public class GroupServlet extends HttpServlet {
 			for (Group group : groups) {
 				JSONObject jgroup = new JSONObject();
 				jgroup.put("name", group.getName());
+				jgroup.put("owner", group.getOwner());
 				jgroup.put("id", group.get_id());
 				jgroups.add(jgroup);
 			}			
