@@ -51,6 +51,11 @@ var login = {
 				}
 				event.preventDefault();
 			});
+			
+			$("#btn_groups").button({icons: {primary: "btn_groups"}})
+				.bind("click", function(){
+					chat.getGroups();
+				});
 
 			loggedOutContent = $("#content_login");
 			

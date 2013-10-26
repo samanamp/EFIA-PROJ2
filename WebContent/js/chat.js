@@ -1,6 +1,6 @@
 //TODO return if the user is admin of group or not.
 
-var refreshMessages;
+var refreshMessages = null;
 var lastMessage = 0;
 var groupID;
 
@@ -68,7 +68,6 @@ var chat = {
 		
 		refreshMessages = setInterval(function(){chat.sendAJAX("", group_id);}, 1000);
 		
-		alert($("#content_chat #content_invite").length);
 		utils.setDialog("invite", "Invite a friend", function(){chat.sendInvitation(group_id);}, {required : true,email : true});
 		
 		if(!login.admin){
@@ -78,7 +77,8 @@ var chat = {
 		}
 	},
 	stop: function(){
-		clearInterval(refreshMessages);
+		if(refreshMessages != null)
+			clearInterval(refreshMessages);
 	},
 	getChatHTML: function(){
 		return "<div class=\"outer_container\">"
@@ -313,7 +313,7 @@ var chat = {
 			},
 			success : function(data) {
 				if (data.success) {
-					chat.initGroupsManager();
+					chat.getGroups();
 				} else{
 					$("#chat_body #error").html(
 							"<li>" + data.error + "</li>").show();
@@ -333,6 +333,8 @@ var chat = {
 	},
 	getGroups: function(){
 		login.verifySession();
+		lastMessage = 0;
+		chat.stop();
 		var settings = {
 			form_id : "",
 			url : "GroupServlet",
@@ -370,8 +372,11 @@ var chat = {
 						.bind("click", function() {$(".success").remove();login.sendDelete();})
 						.button({icons: {primary: "btn_delete"}});
 					
-					$("#btn_groups").button({icons: {primary: "btn_groups"}});
-					$("#btn_chat").button({icons: {primary: "btn_chat"}});
+					$("#btn_groups").button({icons: {primary: "btn_groups"}})
+						.bind('click', function(){
+							chat.getGroups();
+						});
+//					$("#btn_chat").button({icons: {primary: "btn_chat"}});
 					
 					chat.initGroupsManager();
 					
@@ -395,16 +400,18 @@ var chat = {
 					+ '<button id=\"' + g.id + '\" class="btn_delete_group"><a href=\"javascript:void(0)\">Delete</a></button>'
 				 + '</div>'
 					+ '<div>'
-						+ chat.getUsersList(g, admin)
+						+ chat.getUsersList(g)
 					+'</div>';
 		});
 		
 		return list;
 	},
-	getUsersList: function(g, admin){
+	getUsersList: function(g){
 		var list = "";
+		var admin = false;
 		$.each(g.users, function(i,u){
-			list = '<div class="span-10">'
+			admin = (g.owner == u);
+			list += '<div class="span-10">'
 				+ (!admin ? '<button id=\"' + g.id + '_' + u + '\" class="btn_delete_usergroup"><a href=\"javascript:void(0)\">Remove user</a></button>' : '')
 					+ u 
 					+ '</div>';
