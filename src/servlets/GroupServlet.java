@@ -84,6 +84,16 @@ public class GroupServlet extends HttpServlet {
 			} else {
 				res = executeAddNewUser(request, userSession, newUser, groupID);
 			}
+		} else if (method.equals("confirm")) {
+			/* Does not need userSession, it uses email and token for a completely
+			 * different purpose */
+			String groupID = request.getParameter("group_id");
+			if (groupID == null || groupID.equals("")) {
+				res.put("success", false);
+				res.put("error", "A valid group_id must be specified.");
+			} else {
+				res = executeConfirmNewUser(request, response, groupID, email, token);
+			}
 		} else {
 			res.put("success", false);
 			res.put("error", "Could not recognize method: " + method);
@@ -208,6 +218,40 @@ public class GroupServlet extends HttpServlet {
 		} catch (Exception e) {
 			res.put("success", false);
 			res.put("error", "Unknown error at the Server: " + getStackTrace(e));
+		}
+		
+		return res;
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @param groupID
+	 * @param email
+	 * @param token
+	 * @return
+	 */
+	public synchronized JSONObject executeConfirmNewUser(HttpServletRequest request, 
+			HttpServletResponse response, String groupID, String email, String token) {
+		
+		JSONObject res = new JSONObject();
+		String message = "";
+		
+		try {	
+			GroupHandler groupHandler = new GroupHandler(request.getLocalAddr());
+			groupHandler.confirmNewUser(groupID, email, token);
+			message = "Congratulations! You have succesfully joined the group :)";
+		} catch (CustomException ce) {
+			message = "Uh oh! Something went wrong :( The problem was: " + ce.getMessage();
+		} catch (Exception e) {
+			message = "Internal Server Error: " + e.getMessage();
+		}
+		
+		try {
+			response.sendRedirect("confirm.html?message=" + message);
+		} catch (IOException ioe) {
+			res.put("success", false);
+			res.put("error", "Unknown error at the Server: " + getStackTrace(ioe));
 		}
 		
 		return res;

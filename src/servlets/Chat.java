@@ -68,7 +68,7 @@ public class Chat extends HttpServlet {
 			String token = request.getParameter("token");
 			String message = request.getParameter("message");
 			String groupID = request.getParameter("group_id");
-			long msgHead = Integer.parseInt(request.getParameter("msghead"));
+			long msgHead = Long.parseLong(request.getParameter("msghead"));
 			
 			//Verify session
 			UserSession userSession = new UserSession(user);
