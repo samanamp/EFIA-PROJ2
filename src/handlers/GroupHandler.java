@@ -72,6 +72,8 @@ public class GroupHandler {
 			}
 			if (!userIsAMember)
 				members.add(newMember);
+			else
+				throw new CustomException("Group", "The user is already in that group");
 
 			dbHandler.updateGroup(group);
 
