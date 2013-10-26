@@ -47,7 +47,7 @@ public class GroupHandler {
 	 * @param newUserEmail
 	 * 
 	 */
-	public void addNewUserToGroup(String groupID, String newMemberEmail) throws CustomException {
+	public void addNewUserToGroup(String groupID, String newMemberEmail, String ownerEmail) throws CustomException {
 		try {
 			Membership newMember = new Membership(newMemberEmail,
 					SecureGen.generateSecureString(32));
@@ -57,6 +57,8 @@ public class GroupHandler {
 				throw new CustomException("Group", "There is no such user");
 
 			Group group = dbHandler.getGroup(groupID);
+			if(!group.getOwner().equalsIgnoreCase(ownerEmail))
+				throw new CustomException("Group","Unauthorized, you should be admin");
 			ArrayList<Membership> members = group.getUsers();
 
 			boolean userIsAMember = false;
@@ -75,7 +77,7 @@ public class GroupHandler {
 
 			sendGroupMembershipConfirmationLink(group, newMember);
 		} catch (Exception e) {
-			throw new CustomException(CustomException.INTERNAL_ERROR);
+			throw new CustomException(CustomException.INTERNAL_ERROR, e.getMessage());
 		}
 	}
 
@@ -84,7 +86,7 @@ public class GroupHandler {
 		String confirmMessage = "Please confirm your membership in \""
 				+ group.getName() + "\" group owned by \"" + group.getOwner()
 				+ "\"  by clicking on following link: \n" + "<a href=\"http://"
-				+ localServerAddress + ":8080/proj2/GroupServlet?method=confirm&groupid="
+				+ localServerAddress + ":8080/proj2/GroupServlet?method=confirm&group_id="
 				+ group.get_id() + "&token=" + member.getToken() + "&email="
 				+ member.getEmail() + "\">Click me!</a>";
 		System.out.println(confirmMessage);
@@ -168,11 +170,31 @@ public class GroupHandler {
 			throw new CustomException("User","Un-Authorized access");
 	}
 
+	public void removeTheUser(String groupID, String user) throws CustomException{
+		Group group = dbHandler.getGroup(groupID);
+		if(!userIsMember(user, group))		
+			throw new CustomException("User","Un-Authorized access");
+		
+		ArrayList<Membership> members = group.getUsers();
+
+		boolean userIsAMember = false;
+		for (Membership member : members) {
+			if (member.getEmail().equalsIgnoreCase(user)){
+				members.remove(member);
+				group.setUsers(members);
+				dbHandler.updateGroup(group);
+			}
+		}		
+	}
 	/**
 	 * 
 	 * @param groupID
+	 * @throws CustomException 
 	 */
-	public void removeGroup(String groupID) {
+	public void removeGroup(String groupID, String userEmail) throws CustomException {
+		Group group = dbHandler.getGroup(groupID);
+		if(!group.getOwner().equalsIgnoreCase(userEmail))
+			throw new CustomException("user","Unauthorized Action, you should be admin");
 		dbHandler.deleteGroup(groupID);
 	}
 
