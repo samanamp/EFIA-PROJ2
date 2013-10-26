@@ -74,6 +74,18 @@ public class GroupServlet extends HttpServlet {
 			}
 		} else if (method.equals("listgroups")) {
 			res = executeListGroups(request, userSession);
+		} else if (method.equals("adduser")) {
+			String newUser = request.getParameter("newuser");
+			String groupID = request.getParameter("group_id");
+			if (newUser == null || newUser.equals("")) {
+				res.put("success", false);
+				res.put("error", "A valid new user name must be specified.");
+			} else if (groupID == null || groupID.equals("")) {
+				res.put("success", false);
+				res.put("error", "A valid group_id must be specified.");
+			} else {
+				res = executeAddNewUser(request, userSession, newUser, groupID);
+			}
 		} else {
 			res.put("success", false);
 			res.put("error", "Could not recognize method: " + method);
@@ -86,6 +98,13 @@ public class GroupServlet extends HttpServlet {
 		out.close();
 	}
 
+	/**
+	 * 
+	 * @param request
+	 * @param userSession
+	 * @param groupName
+	 * @return
+	 */
 	public synchronized JSONObject executeAddGroup(HttpServletRequest request, 
 			UserSession userSession, String groupName) {
 		
@@ -113,6 +132,12 @@ public class GroupServlet extends HttpServlet {
 		return res;
 	}
 	
+	/**
+	 * 
+	 * @param request
+	 * @param userSession
+	 * @return
+	 */
 	public synchronized JSONObject executeListGroups(HttpServletRequest request, 
 			UserSession userSession) {
 		
@@ -148,6 +173,40 @@ public class GroupServlet extends HttpServlet {
 			res.put("success", true);
 			res.put("groups", jgroups);
 			
+		} catch (Exception e) {
+			res.put("success", false);
+			res.put("error", "Unknown error at the Server: " + getStackTrace(e));
+		}
+		
+		return res;
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @param userSession
+	 * @param groupName
+	 * @return
+	 */
+	public synchronized JSONObject executeAddNewUser(HttpServletRequest request, 
+			UserSession userSession, String newUser, String groupID) {
+		
+		JSONObject res = new JSONObject();
+		
+		try {
+			/* Verify the session for that user */
+			if (!userSession.isValid()) {
+				res.put("success", false);
+				res.put("error", userSession.getProblem());
+				return res;
+			}
+			
+			GroupHandler groupHandler = new GroupHandler(request.getLocalAddr());
+			groupHandler.addNewUserToGroup(groupID, newUser);
+			res.put("success", true);
+		} catch (CustomException ce) {
+			res.put("success", false);
+			res.put("error", ce.getMessage());
 		} catch (Exception e) {
 			res.put("success", false);
 			res.put("error", "Unknown error at the Server: " + getStackTrace(e));
