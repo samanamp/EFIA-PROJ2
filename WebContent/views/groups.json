@@ -1,0 +1,12 @@
+{
+   "_id": "_design/groups",
+   "language": "javascript",
+   "views": {
+       "by_owner": {
+           "map": "function(doc) {\n   if (doc.owner != null) {\n\tfor (var i = 0; i < doc.users.length; i++) {\n\t\tif (doc.owner == doc.users[i].email)\n\t\t\temit(doc.users[i].email, doc._id);\n\t}   \n   }\n}"
+       },
+       "by_user": {
+           "map": "function(doc) {\n   if (doc.owner != null) {\n\tfor (var i = 0; i < doc.users.length; i++) {\n\t   if (doc.users[i].token == \"\")\n\t   emit(doc.users[i].email, doc._id);\n\t}   \n   }\n}"
+       }
+   }
+}
