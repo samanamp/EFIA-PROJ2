@@ -171,19 +171,25 @@ public class GroupHandler {
 			throw new CustomException("User","Un-Authorized access");
 	}
 
-	public void removeTheUser(String groupID, String user) throws CustomException{
+	public void removeTheUser(String groupID, String email, String exUser) throws CustomException{
 		Group group = dbHandler.getGroup(groupID);
-		if(!userIsMember(user, group))		
-			throw new CustomException("User","Un-Authorized access");
+		if(!userIsMember(email, group))		
+			throw new CustomException("User","The user is not a member of the group.");
+		if (group.getOwner().equals(exUser))
+			throw new CustomException("User","The owner cannot be removed from the group");
+		if (!group.getOwner().equals(email)) {
+			if (!exUser.equals(email))
+				throw new CustomException("User","The user is not allowed to remove other users.");
+		}
 		
 		ArrayList<Membership> members = group.getUsers();
 
-		boolean userIsAMember = false;
 		for (Membership member : members) {
-			if (member.getEmail().equalsIgnoreCase(user)){
+			if (member.getEmail().equalsIgnoreCase(exUser)){
 				members.remove(member);
 				group.setUsers(members);
 				dbHandler.updateGroup(group);
+				break;
 			}
 		}		
 	}

@@ -94,6 +94,18 @@ public class GroupServlet extends HttpServlet {
 			} else {
 				res = executeConfirmNewUser(request, response, groupID, email, token);
 			}
+		} else if (method.equals("removeuser")) {
+			String exUser = request.getParameter("exuser");
+			String groupID = request.getParameter("group_id");
+			if (exUser == null || exUser.equals("")) {
+				res.put("success", false);
+				res.put("error", "A valid user name to remove must be specified.");
+			} else if (groupID == null || groupID.equals("")) {
+				res.put("success", false);
+				res.put("error", "A valid group_id must be specified.");
+			} else {
+				res = executeRemoveUser(request, userSession, exUser, groupID);
+			}
 		} else {
 			res.put("success", false);
 			res.put("error", "Could not recognize method: " + method);
@@ -211,6 +223,41 @@ public class GroupServlet extends HttpServlet {
 			
 			GroupHandler groupHandler = new GroupHandler(request.getLocalAddr());
 			groupHandler.addNewUserToGroup(groupID, newUser, userSession.getEmail());
+			res.put("success", true);
+		} catch (CustomException ce) {
+			res.put("success", false);
+			res.put("error", ce.getMessage());
+		} catch (Exception e) {
+			res.put("success", false);
+			res.put("error", "Unknown error at the Server: " + getStackTrace(e));
+		}
+		
+		return res;
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @param userSession
+	 * @param exUser
+	 * @param groupID
+	 * @return
+	 */
+	public synchronized JSONObject executeRemoveUser(HttpServletRequest request, 
+			UserSession userSession, String exUser, String groupID) {
+		
+		JSONObject res = new JSONObject();
+		
+		try {
+			/* Verify the session for that user */
+			if (!userSession.isValid()) {
+				res.put("success", false);
+				res.put("error", userSession.getProblem());
+				return res;
+			}
+			
+			GroupHandler groupHandler = new GroupHandler(request.getLocalAddr());
+			groupHandler.removeTheUser(groupID, userSession.getEmail(), exUser);
 			res.put("success", true);
 		} catch (CustomException ce) {
 			res.put("success", false);

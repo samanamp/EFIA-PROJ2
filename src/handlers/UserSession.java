@@ -54,7 +54,7 @@ public class UserSession {
 	 */
 	public void verifySession(DBHandler dbh, String email, String token) {
 		if (!UserData.isValidEmail(email)) {
-			problem = "The e-mail provided is not valid.";
+			problem = "The e-mail provided as session is not valid.";
 			return;
 		}
 		UserData user;
