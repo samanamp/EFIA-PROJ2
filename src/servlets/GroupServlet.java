@@ -8,9 +8,7 @@ import handlers.UserSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -22,8 +20,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import data.Group;
-import data.Message;
-import data.UserData;
 import exceptions.CustomException;
 
 /**
