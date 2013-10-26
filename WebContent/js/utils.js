@@ -3,7 +3,7 @@ var utils = {
 			var form_id = "#frm_" + action;
 			var txt_id = "#txt_" + action;
 			var content_id = "#content_" + action;
-			var button_id = "#btn_" + action;
+			var button_id = "btn_" + action;
 			var link_id = "#lnk_" + action;
 			
 			var frmValidator = $(form_id).validate({
@@ -57,12 +57,18 @@ var utils = {
 			$(".success").remove();
 		},
 		showLoading: function (text) {
-			return "<div id=\"sending\" class=\"span-7 last\">" +
-						"<h3>" +
-							"<img src=\"css/images/loading.gif\" />" +
-							text +
-						"</h3>" +
-					"</div>";
+			if(text != "")
+				return ("<div id=\"sending\" class=\"span-7 last\">" +
+							"<h3>" +
+								"<img src=\"css/images/loading.gif\" />" +
+								text +
+							"</h3>" +
+						"</div>");
+			else
+				return ("<div id=\"sending\" class=\"notext\">" +
+						"<img src=\"css/images/loading.gif\" />" +
+						"</div>");
+				
 		},
 		sendAjax: function(settings) {
 			/*******************************************************************************
@@ -84,6 +90,9 @@ var utils = {
 
 			if (settings.loadingText == undefined)
 				settings.loadingText = "";
+			
+			if (settings.btn_id == undefined)
+				settings.btn_id = "";
 
 			$.ajax({
 				type : "POST",
@@ -92,30 +101,11 @@ var utils = {
 				data : settings.data,
 				success : settings.success,
 				beforeSend : function() {
-					if ($(settings.form_id).parent(".ui-dialog-content").length > 0) {
-						$(settings.form_id).parent(".ui-dialog-content")
-								.siblings(".ui-dialog-buttonpane").find(
-										".ui-dialog-buttonset").find("button")
-								.hide();
-
-						$(settings.form_id).parent(".ui-dialog-content")
-								.siblings(".ui-dialog-buttonpane").find(
-										".ui-dialog-buttonset").append(
-												utils.showLoading(settings.loadingText));
-
-					} else {
-						$(settings.form_id).find("input[type=submit]").hide()
-								.after(utils.showLoading(settings.loadingText))// login
-					}
-
+					if(settings.btn_id != "")
+						$(settings.btn_id).hide().after(utils.showLoading(settings.loadingText));
 				},
 				complete : function() {
-					$(settings.form_id).parent(".ui-dialog-content").siblings(
-							".ui-dialog-buttonpane").find("button").show();
-
-					$(settings.form_id).find("input[type=submit]").show();// for
-																			// login
-																			// case
+					$(settings.btn_id).show();
 					$("#sending").remove();
 					$(settings.form_id).find(settings.form_id + " .success")
 							.remove();
