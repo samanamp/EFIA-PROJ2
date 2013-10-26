@@ -22,6 +22,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import data.Group;
+import data.Membership;
 import data.Message;
 import data.UserData;
 import exceptions.CustomException;
@@ -134,6 +135,14 @@ public class GroupServlet extends HttpServlet {
 				jgroup.put("name", group.getName());
 				jgroup.put("owner", group.getOwner());
 				jgroup.put("id", group.get_id());
+				
+				ArrayList<Membership> users = group.getUsers();
+				JSONArray jusers = new JSONArray();
+				for (Membership user : users) {
+					jusers.add(user.getEmail());
+				}
+				jgroup.put("users", jusers);
+				
 				jgroups.add(jgroup);
 			}			
 			res.put("success", true);
