@@ -3,7 +3,6 @@ package handlers;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
 
 import org.lightcouch.CouchDbClient;
 import org.lightcouch.DocumentConflictException;
@@ -153,7 +152,10 @@ public class DBHandler {
 				JsonObject.class);
 		dbClient.save(jsonobj);
 	}
-
+	
+	public boolean ifGroupExists(String groupID){
+		return dbClient.contains(groupID);
+	}
 	public Group getGroup(String groupID) {
 		Group group = dbClient.find(Group.class, groupID);
 		return group;

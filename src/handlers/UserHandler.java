@@ -2,11 +2,6 @@ package handlers;
 
 import java.io.IOException;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
-
-import org.lightcouch.NoDocumentException;
-
 import data.UserData;
 
 public class UserHandler {
