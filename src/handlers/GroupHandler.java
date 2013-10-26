@@ -125,16 +125,8 @@ public class GroupHandler {
 	 */
 	public void addNewMessageToGroup(String groupID, Message newMessage) throws CustomException {
 		Group group = dbHandler.getGroup(groupID);
-		boolean ifUserIsAMember = false;
-		ArrayList <Membership> members = group.getUsers();
-		for(Membership member:members){
-			if(member.getEmail().equalsIgnoreCase(newMessage.getUser())) {
-				ifUserIsAMember=true;
-				break;
-			}
-		}
 		
-		if(!ifUserIsAMember)
+		if(!userIsMember(newMessage.getUser(), group))
 			throw new CustomException("Group", "The user doesn't have permission to post");
 		
 		group.getMessages().add(newMessage);
@@ -166,9 +158,14 @@ public class GroupHandler {
 	 * 
 	 * @param groupID
 	 * @return
+	 * @throws CustomException 
 	 */
-	public ArrayList<Message> getMessagesOfGroup(String groupID) {
-		return dbHandler.getGroup(groupID).getMessages();
+	public ArrayList<Message> getMessagesOfGroup(String groupID,String userEmail) throws CustomException {
+		Group group = dbHandler.getGroup(groupID);
+		if(userIsMember(userEmail, group))		
+			return dbHandler.getGroup(groupID).getMessages();
+		else
+			throw new CustomException("User","Un-Authorized access");
 	}
 
 	/**
